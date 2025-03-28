@@ -1,0 +1,10 @@
+---
+layout: default
+title: "Cyber Apocalypse CTF 2025: Tales from Eldoria"
+---
+<h1>Danh sách bài viết - Cyber Apocalypse CTF 2025: Tales from Eldoria</h1>
+<ul>
+{% for post in site.Cyber_Apocalypse_CTF_2025_Tales_from_Eldoria %}
+  <li><a href="{{ post.url }}">{{ post.title }}</a> – {{ post.date | date: "%Y-%m-%d" }}</li>
+{% endfor %}
+</ul>

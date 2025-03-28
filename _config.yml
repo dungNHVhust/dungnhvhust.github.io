@@ -323,3 +323,8 @@ defaults:
       comments: # true
       share: true
       related: true
+
+collections:
+  Cyber_Apocalypse_CTF_2025_Tales_from_Eldoria:
+    output: true
+    permalink: /Cyber_Apocalypse_CTF_2025_Tales_from_Eldoria/:title/
