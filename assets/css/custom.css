@@ -25,4 +25,61 @@ blockquote {
     padding: 0.2rem 0.4rem;
     border-radius: 4px;
   }
-  
+ 
+  /* ===== Markdown Content Styling ===== */
+
+.post-content {
+  line-height: 1.8;
+  font-size: 1rem;
+  color: #e0e0e0;
+}
+
+.post-content code {
+  background: #1e1e1e;
+  color: #00ff88;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.95rem;
+}
+
+.post-content pre {
+  background: #121212;
+  color: #00ff88;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+.post-content blockquote {
+  border-left: 4px solid #00ff88;
+  background: #202020;
+  padding: 0.5rem 1rem;
+  color: #ccc;
+}
+
+.post-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.post-content table, th, td {
+  border: 1px solid #555;
+}
+
+.post-content th, td {
+  padding: 8px;
+  text-align: left;
+  color: #ddd;
+}
+
+.post-content a {
+  color: #00d1ff;
+  text-decoration: underline;
+}
+
+.post-content h2, h3, h4 {
+  color: #00ff88;
+  margin-top: 1.5rem;
+}
