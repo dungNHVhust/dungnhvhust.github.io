@@ -1,130 +1,105 @@
 #!/bin/bash
-# Script: new-post.sh - Tạo bài viết CTF mới cho blog Jekyll (GitHub Pages)
+# ====== Script Auto Tạo Writeup ======
+# Usage: ./new-post.sh <Category> "<Title>"
+# Ví dụ: ./new-post.sh HTB "Kenobi Machine"
 
-# Kiểm tra tham số đầu vào
 if [ $# -lt 2 ]; then
-  echo "Sử dụng: $0 <tên-chuyên-mục> <tiêu đề bài viết>"
-  echo "Ví dụ: $0 HTB \"Kenobi\""
+  echo "❗ Dùng: $0 <Category> \"Title\""
   exit 1
 fi
 
-# Lấy tham số chuyên mục và tiêu đề
-category_original="$1"       # Tên chuyên mục như người dùng nhập (có thể có dấu, khoảng trắng)
+category_original="$1"
 shift
-title_original="$*"          # Tiêu đề bài viết (cho phép nhiều từ không cần tự nối chuỗi bằng dấu \" \")
+title_original="$*"
 
-# Xử lý an toàn tên chuyên mục (loại bỏ dấu, ký tự đặc biệt, khoảng trắng)
-if ! command -v iconv >/dev/null 2>&1; then
-  echo "Lỗi: Không tìm thấy lệnh 'iconv'. Vui lòng cài đặt iconv để xử lý ký tự Unicode."
-  exit 1
-fi
-# Loại bỏ dấu tiếng Việt và ký tự Unicode (chuyển về ASCII gần tương đương)
-category_safe=$(echo "$category_original" | iconv -f UTF-8 -t ASCII//TRANSLIT 2>/dev/null)
-# Thay khoảng trắng và ký tự đặc biệt bằng dấu gạch dưới, bỏ ký tự không hợp lệ
-category_safe=$(echo "$category_safe" | sed -r 's/[^A-Za-z0-9]+/_/g')
-# Bỏ gạch dưới thừa ở đầu/cuối chuỗi (nếu có)
-category_safe=$(echo "$category_safe" | sed -r 's/^_+|_+$//g')
+# Xử lý tên an toàn
+category_safe=$(echo "$category_original" | iconv -f UTF-8 -t ASCII//TRANSLIT | sed -r 's/[^A-Za-z0-9]+/_/g' | sed -r 's/^_+|_+$//g')
+title_slug=$(echo "$title_original" | iconv -f UTF-8 -t ASCII//TRANSLIT | sed -r 's/[^A-Za-z0-9]+/-/g' | sed -r 's/^-+|-+$//g' | tr 'A-Z' 'a-z')
 
-# Xử lý an toàn tiêu đề bài viết (tạo slug không dấu, viết thường, dùng '-' nối từ)
-title_slug=$(echo "$title_original" | iconv -f UTF-8 -t ASCII//TRANSLIT 2>/dev/null)
-title_slug=$(echo "$title_slug" | sed -r 's/[^A-Za-z0-9]+/-/g')
-title_slug=$(echo "$title_slug" | sed -r 's/^-+|-+$//g')        # bỏ '-' thừa đầu/cuối
-title_slug=$(echo "$title_slug" | tr 'A-Z' 'a-z')               # chuyển thành chữ thường
-
-# Đặt đường dẫn thư mục collection và file bài viết
 collection_dir="_${category_safe}"
+layout_file="_layouts/${category_safe}.html"
+page_file="${category_safe}.html"
 today=$(date +%Y-%m-%d)
-post_filename="${today}-${title_slug}.md"
-post_filepath="${collection_dir}/${post_filename}"
-collection_page="${category_safe}.html"  # trang HTML liệt kê bài trong chuyên mục
+post_file="${collection_dir}/${today}-${title_slug}.md"
 
-# Kiểm tra thư mục gốc Jekyll
-if [ ! -f "_config.yml" ]; then
-  echo "Lỗi: Không tìm thấy _config.yml. Hãy chạy script tại thư mục gốc của blog Jekyll."
-  exit 1
-fi
-
-# Tạo thư mục collection nếu chưa tồn tại
+# ====== 1. Tạo collection folder ======
 if [ ! -d "$collection_dir" ]; then
   mkdir "$collection_dir"
-  echo "Đã tạo thư mục mới: $collection_dir/"
-else
-  echo "Thư mục $collection_dir/ đã tồn tại."
+  echo "✅ Created collection folder: $collection_dir/"
 fi
 
-# Cập nhật cấu hình _config.yml cho collection mới
-collection_key="$category_safe"
-collection_exists=false
-if grep -qE "^ {0,}$collection_key:" "_config.yml"; then
-  # Đã có khóa collection này trong cấu hình
-  collection_exists=true
-fi
-
-if grep -qE "^collections:" "_config.yml"; then
-  # Đã có phần collections trong config
-  if [ "$collection_exists" = false ]; then
-    # Thêm cấu hình cho collection mới dưới khóa collections
-    # Thêm dòng vào sau dòng 'collections:' hoặc sau các collection khác
-    # Tìm dòng bắt đầu bằng 'collections:' và chèn sau đó (giữ thụt lề 2 khoảng)
-    sed -i "/^collections:/a\\
-  $collection_key:\\
-    output: true\\
-    permalink: /$collection_key/:title/
-    " _config.yml
-    echo "Đã thêm cấu hình cho collection '$collection_key' vào _config.yml."
-  else
-    echo "Collection '$collection_key' đã được khai báo trong _config.yml, bỏ qua bước thêm cấu hình."
-  fi
-else
-  # Chưa có mục collections: -> thêm mới hoàn toàn
-  cat >> "_config.yml" <<END
+# ====== 2. Thêm config vào _config.yml ======
+if ! grep -q "$category_safe:" _config.yml; then
+  echo "Thêm collection vào _config.yml..."
+  cat >> _config.yml <<EOF
 
 collections:
-  $collection_key:
+  $category_safe:
     output: true
-    permalink: /$collection_key/:title/
-END
-  echo "Đã tạo mục collections và thêm collection '$collection_key' vào _config.yml."
+    permalink: /$category_safe/:title/
+EOF
+else
+  echo "ℹ️ Collection '$category_safe' đã có trong _config.yml"
 fi
 
-# Tạo file markdown cho bài viết mới
-if [ -f "$post_filepath" ]; then
-  echo "Lưu ý: File bài viết $post_filepath đã tồn tại, bỏ qua bước tạo file."
-else
-  # Nội dung front matter cho bài viết mới
-  # (Chú ý thoát ký tự đặc biệt trong tiêu đề)
-  safe_title_yaml=$(echo "$title_original" | sed 's/\\/\\\\/g; s/\"/\\"/g')
-  cat > "$post_filepath" <<END
+# ====== 3. Tạo file writeup ======
+if [ ! -f "$post_file" ]; then
+  cat > "$post_file" <<EOF
 ---
 layout: post
-title: "$safe_title_yaml"
+title: "$title_original"
 date: $(date +%Y-%m-%d\ %H:%M:%S\ %z)
-tags: [CTF]
+tags: [CTF, $category_original]
 ---
-<!-- Viết nội dung write-up tại đây -->
-END
-  echo "Đã tạo bài viết mẫu: $post_filepath"
-fi
 
-# Tạo trang HTML liệt kê bài viết của collection (nếu chưa có)
-if [ ! -f "$collection_page" ]; then
-  echo "Tạo trang danh mục: $collection_page"
-  echo "---" > "$collection_page"
-  echo "layout: default" >> "$collection_page"
-  echo "title: \"$category_original\"" >> "$collection_page"
-  echo "---" >> "$collection_page"
-  echo "<h1>Danh sách bài viết - $category_original</h1>" >> "$collection_page"
-  echo "<ul>" >> "$collection_page"
-  # Vòng lặp liệt kê các bài viết trong collection
-  echo "{% for post in site.$collection_key %}" >> "$collection_page"
-  echo "  <li><a href=\"{{ post.url }}\">{{ post.title }}</a> – {{ post.date | date: \"%Y-%m-%d\" }}</li>" >> "$collection_page"
-  echo "{% endfor %}" >> "$collection_page"
-  echo "</ul>" >> "$collection_page"
+## Thông tin Challenge
+
+## Phân tích
+
+## Khai thác
+
+## Flag
+
+EOF
+  echo "✅ Created writeup: $post_file"
 else
-  echo "Trang $collection_page đã tồn tại, bỏ qua bước tạo."
+  echo "⚠️ File $post_file đã tồn tại, bỏ qua."
 fi
 
-# Thêm liên kết chuyên mục vào menu (index.html hoặc nav.html)
+# ====== 4. Tạo layout HTML ======
+if [ ! -f "$layout_file" ]; then
+  cat > "$layout_file" <<EOF
+---
+layout: default
+---
+
+<h1>${category_original} Writeups</h1>
+<ul>
+{% for post in site.${category_safe} %}
+  <li><a href="{{ post.url }}">{{ post.title }}</a> – {{ post.date | date: "%Y-%m-%d" }}</li>
+{% endfor %}
+</ul>
+EOF
+  echo "✅ Created layout file: $layout_file"
+else
+  echo "ℹ️ Layout file $layout_file đã tồn tại."
+fi
+
+# ====== 5. Tạo page hiển thị collection ======
+if [ ! -f "$page_file" ]; then
+  cat > "$page_file" <<EOF
+---
+layout: ${category_safe}
+title: "${category_original} Writeups"
+permalink: /${category_safe}/
+---
+EOF
+  echo "✅ Created page: $page_file"
+else
+  echo "ℹ️ Page file $page_file đã tồn tại."
+fi
+
+# ====== 6. Add link vào menu ======
 menu_file=""
 if [ -f "_includes/nav.html" ]; then
   menu_file="_includes/nav.html"
@@ -133,23 +108,15 @@ elif [ -f "index.html" ]; then
 fi
 
 if [ -n "$menu_file" ]; then
-  # Kiểm tra nếu liên kết đã có
-  if grep -q "$collection_page" "$menu_file"; then
-    echo "Menu đã có mục $category_original, bỏ qua bước cập nhật menu."
+  if ! grep -q "${page_file}" "$menu_file"; then
+    sed -i "/<\/ul>/ i\\
+<li><a href=\"/${page_file}\">${category_original}</a></li>" "$menu_file"
+    echo "✅ Added link to $category_original in $menu_file"
   else
-    echo "Đang cập nhật menu trong $menu_file ..."
-    # Chèn link vào menu (trước thẻ đóng </ul> nếu có)
-    if grep -q "</ul>" "$menu_file"; then
-      sed -i "/<\/ul>/ i\\
-<li><a href=\"$collection_page\">$category_original</a></li>" "$menu_file"
-    else
-      # Nếu không có <ul>, thì thêm dạng dòng mới
-      echo "<a href=\"$collection_page\">$category_original</a><br>" >> "$menu_file"
-    fi
-    echo "Đã thêm liên kết chuyên mục '$category_original' vào $menu_file."
+    echo "ℹ️ Menu đã có mục $category_original."
   fi
 else
-  echo "Không tìm thấy file menu (nav.html hoặc index.html) để cập nhật liên kết chuyên mục."
+  echo "⚠️ Không tìm thấy file nav.html hoặc index.html để thêm menu."
 fi
 
-echo "Hoàn tất! Hãy mở $post_filepath để viết nội dung, sau đó chạy \`jekyll serve\` để kiểm tra."
+echo "🎯 Hoàn tất! Bạn có thể sửa nội dung file: $post_file"
