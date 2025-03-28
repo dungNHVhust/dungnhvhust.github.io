@@ -99,24 +99,20 @@ else
   echo "ℹ️ Page file $page_file đã tồn tại."
 fi
 
-# ====== 6. Add link vào menu ======
-menu_file=""
-if [ -f "_includes/nav.html" ]; then
-  menu_file="_includes/nav.html"
-elif [ -f "index.html" ]; then
-  menu_file="index.html"
-fi
-
-if [ -n "$menu_file" ]; then
-  if ! grep -q "${page_file}" "$menu_file"; then
-    sed -i "/<\/ul>/ i\\
-<li><a href=\"/${page_file}\">${category_original}</a></li>" "$menu_file"
-    echo "✅ Added link to $category_original in $menu_file"
+# ====== 6. Add link vào index.html ======
+if [ -f "index.html" ]; then
+  # Kiểm tra nếu link đã có
+  if ! grep -q "/${category_safe}/" index.html; then
+    echo "Thêm link vào index.html..."
+    sed -i "/^---/!b;n;/^---/!b;n;a\\
+<a href=\"/${category_safe}/\">${category_original}</a><br>
+" index.html
+    echo "✅ Added link to $category_original in index.html"
   else
-    echo "ℹ️ Menu đã có mục $category_original."
+    echo "ℹ️ Link $category_original đã có trong index.html."
   fi
 else
-  echo "⚠️ Không tìm thấy file nav.html hoặc index.html để thêm menu."
+  echo "⚠️ Không tìm thấy index.html để thêm link."
 fi
 
 echo "🎯 Hoàn tất! Bạn có thể sửa nội dung file: $post_file"
