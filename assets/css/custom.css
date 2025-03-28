@@ -130,3 +130,11 @@ blockquote {
   border-radius: 6px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
+
+/* ===== Container giới hạn ===== */
+.main-content {
+  max-width: 950px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
