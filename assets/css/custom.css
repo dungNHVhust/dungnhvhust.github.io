@@ -1,0 +1,28 @@
+/* ====== Custom Markdown Style ====== */
+blockquote {
+    border-left: 4px solid #4CAF50;
+    background: #f9f9f9;
+    padding: 0.5em 1em;
+    color: #333;
+  }
+  
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+  table, th, td {
+    border: 1px solid #aaa;
+  }
+  th, td {
+    padding: 8px;
+    text-align: left;
+  }
+  
+  pre, code {
+    background: #1e1e1e;
+    color: #00ff88;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+  }
+  
