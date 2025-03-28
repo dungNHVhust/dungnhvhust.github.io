@@ -46,7 +46,7 @@ fi
 if [ ! -f "$post_file" ]; then
   cat > "$post_file" <<EOF
 ---
-layout: post
+layout: default
 title: "$title_original"
 date: $(date +%Y-%m-%d\ %H:%M:%S\ %z)
 tags: [CTF, $category_original]
