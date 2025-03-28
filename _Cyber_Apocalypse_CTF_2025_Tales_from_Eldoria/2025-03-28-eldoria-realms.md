@@ -19,7 +19,7 @@ Trang web có 2 service :
 ### **Ruby class pollution qua gộp đệ quy**
 
 Phân tích đoạn code dưới đây ta biết được cách server merge JSON object người dùng nhập vào với object `$player` đã có:
-```ruby=
+```ruby
 class Adventurer
 	@@realm_url = "http://eldoria-realm.htb"
 
@@ -68,7 +68,7 @@ Ruby phụ thuộc rất nhiều vào mô hình lập trình hướng đối tư
 Chi tiết về Class Pollution trong Ruby có thể đọc thêm tại [đây](https://blog.doyensec.com/2024/10/02/class-pollution-ruby.html).
 
 Quay lại với bài này,tại endpoint `/merge-fates` hàm `merge_with` đã sử dụng `recursive_merge()`  với input là JSON từ user:
-```ruby=
+```ruby
 post "/merge-fates" do
     content_type :json
     json_input = JSON.parse(request.body.read)
@@ -114,7 +114,7 @@ Payload:
 Ta đã thao túng được từ `player -> (player's) class -> (its) superclass -> realm_url`,vì vậy mỗi khi gọi `Adventurer.realm_url` đều sẽ trả về `attacker_url`.
 
 Khi `Adventurer.realm_url` bị ghi đè,mỗi khi truy cập `/connect-realm`  đều sẽ thực hiện lệnh `curl` đến `attacker_url`:
-```ruby=
+```ruby
 get "/connect-realm" do
     content_type :json
     if Adventurer.respond_to?(:realm_url)
@@ -134,7 +134,7 @@ end
 
 ### **Curl Gopher SSRF -> gRPC**
 Ở gRPC server cung cấp cho chúng ta 2 phương thức. Trong phương thức `CheckHealth()` tồn tại lỗ hổng OS Command Injection: 
-```ruby=
+```ruby
 func (s *server) CheckHealth(ctx context.Context, req *pb.HealthCheckRequest) (*pb.HealthCheckResponse, error) {
 	ip := req.Ip
 	port := req.Port
@@ -167,7 +167,7 @@ func healthCheck(ip string, port string) error {
 ```
 
 Từ `Dockerfile` phát hiện ra rằng phiên bản 7.70.0 được sử dụng, vốn dễ bị tấn công bằng cách chuyển đổi giao thức chéo sử dụng `gopher://` : 
-```dockerfile=
+```dockerfile
 # Install curl with shared library support
 RUN wget https://curl.haxx.se/download/curl-7.70.0.tar.gz && \
     tar xfz curl-7.70.0.tar.gz && \
@@ -198,7 +198,7 @@ Follow TCP Stream để lấy request.
 Sau đó export ra dạng raw để xử lý.
 ![](https://)![](http://note.bksec.vn/pad/uploads/4f664e79-6e8a-4dff-aafd-ab3d2502cb66.png)
 Dùng python để xử lý hex và URLencode payload:
-```python=
+```python
 import urllib.parse
 
 # Đường dẫn đến file raw
