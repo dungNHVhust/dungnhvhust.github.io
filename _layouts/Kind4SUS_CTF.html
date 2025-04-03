@@ -1,0 +1,10 @@
+---
+layout: default
+---
+
+<h1>Kind4SUS CTF Writeups</h1>
+<ul>
+{% for post in site.Kind4SUS_CTF %}
+  <li><a href="{{ post.url }}">{{ post.title }}</a> – {{ post.date | date: "%Y-%m-%d" }}</li>
+{% endfor %}
+</ul>
