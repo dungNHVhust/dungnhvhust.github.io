@@ -1,0 +1,10 @@
+---
+layout: default
+---
+
+<h1>SwampCTF 2025 Writeups</h1>
+<ul>
+{% for post in site.SwampCTF_2025 %}
+  <li><a href="{{ post.url }}">{{ post.title }}</a> – {{ post.date | date: "%Y-%m-%d" }}</li>
+{% endfor %}
+</ul>

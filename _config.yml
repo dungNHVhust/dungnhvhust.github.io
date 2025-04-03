@@ -331,3 +331,8 @@ collections:
   Cyber_Apocalypse_CTF_2025_Tales_from_Eldoria:
     output: true
     permalink: /Cyber_Apocalypse_CTF_2025_Tales_from_Eldoria/:title/
+
+collections:
+  SwampCTF_2025:
+    output: true
+    permalink: /SwampCTF_2025/:title/
