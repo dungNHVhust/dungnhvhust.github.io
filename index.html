@@ -3,17 +3,60 @@ layout: home
 author_profile: true
 ---
 
+<style>
+body {
+  background: #101820;
+  color: #00ffb3;
+}
+
+h2, h3 {
+  color: #00ffb3;
+  font-family: 'Fira Mono', 'Consolas', monospace;
+}
+
+a {
+  color: #00eaff;
+  text-decoration: underline;
+  font-family: 'Fira Mono', 'Consolas', monospace;
+}
+
+a:hover {
+  color: #00ffb3;
+  text-shadow: 0 0 5px #00ffb3;
+}
+
+.writeup-list {
+  margin-left: 1.5em;
+  margin-bottom: 2em;
+}
+.writeup-item {
+  margin-bottom: 0.7em;
+  font-size: 1.15em;
+  font-family: 'Fira Mono', 'Consolas', monospace;
+}
+.writeup-date {
+  color: #00b386;
+  font-size: 0.95em;
+  margin-left: 0.5em;
+}
+</style>
+
 <h2>All Writeups</h2>
 
 {% assign collections = "Cyber_Apocalypse_CTF_2025_Tales_from_Eldoria,Kind4SUS_CTF,SwampCTF_2025" | split: "," %}
+{% assign collection_titles = "Cyber Apocalypse CTF 2025 Tales from Eldoria,Kind4SUS CTF,SwampCTF 2025" | split: "," %}
+
 {% for coll in collections %}
-  <h3>{{ coll | replace: "_", " " }}</h3>
-  <ul>
+  <h3>{{ collection_titles[forloop.index0] }}</h3>
+  <div class="writeup-list">
     {% for post in site[coll] %}
-      <li>
+      <div class="writeup-item">
         <a href="{{ post.url }}">{{ post.title }}</a>
-        <span style="color:gray;">({{ post.date | date: "%Y-%m-%d" }})</span>
-      </li>
+        <span class="writeup-date">({{ post.date | date: "%Y-%m-%d" }})</span>
+      </div>
     {% endfor %}
-  </ul>
+    {% if site[coll].size == 0 %}
+      <span style="color:#008060;">No writeups yet.</span>
+    {% endif %}
+  </div>
 {% endfor %}
