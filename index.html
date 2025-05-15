@@ -9,35 +9,49 @@ body {
   color: #00ffb3;
 }
 
+/* Main content khung bo góc */
+.main-hacker-box {
+  background: #181f26;
+  border: 2px solid #00ffb3;
+  border-radius: 18px;
+  padding: 2.5em 2em 2em 2em;
+  margin: 2em 0 2em 0;
+  box-shadow: 0 0 24px #00ffb355;
+}
+
 h2, h3 {
   color: #00ffb3;
   font-family: 'Fira Mono', 'Consolas', monospace;
 }
 
-a {
-  color: #00eaff;
-  text-decoration: underline;
+/* Header (masthead) chỉnh màu và chữ */
+.site-header, .masthead {
+  background: #101820 !important;
+  border-bottom: 2px solid #00ffb3;
+}
+.masthead__inner-wrap, .site-title {
+  background: transparent !important;
+}
+.site-title, .masthead__inner-wrap .site-title {
+  font-size: 2.5em !important;
+  font-weight: bold !important;
+  color: #00ffb3 !important;
+  text-shadow: 0 0 12px #00ffb3, 0 0 2px #00eaff;
   font-family: 'Fira Mono', 'Consolas', monospace;
+  letter-spacing: 2px;
 }
 
-a:hover {
-  color: #00ffb3;
-  text-shadow: 0 0 5px #00ffb3;
+/* Footer chỉnh màu */
+.site-footer, .page__footer {
+  background: #101820 !important;
+  color: #00ffb3 !important;
+  border-top: 2px solid #00ffb3;
 }
-
-.writeup-list {
-  margin-left: 1.5em;
-  margin-bottom: 2em;
+.site-footer a, .page__footer a {
+  color: #00eaff !important;
 }
-.writeup-item {
-  margin-bottom: 0.7em;
-  font-size: 1.15em;
-  font-family: 'Fira Mono', 'Consolas', monospace;
-}
-.writeup-date {
-  color: #00b386;
-  font-size: 0.95em;
-  margin-left: 0.5em;
+.site-footer a:hover, .page__footer a:hover {
+  color: #00ffb3 !important;
 }
 
 /* Author profile custom style */
@@ -69,8 +83,24 @@ a:hover {
 .author__profile .author__urls a:hover {
   color: #00ffb3;
 }
+
+.writeup-list {
+  margin-left: 1.5em;
+  margin-bottom: 2em;
+}
+.writeup-item {
+  margin-bottom: 0.7em;
+  font-size: 1.15em;
+  font-family: 'Fira Mono', 'Consolas', monospace;
+}
+.writeup-date {
+  color: #00b386;
+  font-size: 0.95em;
+  margin-left: 0.5em;
+}
 </style>
 
+<div class="main-hacker-box">
 <h2>All Writeups</h2>
 
 {% assign collections = "Cyber_Apocalypse_CTF_2025_Tales_from_Eldoria,Kind4SUS_CTF,SwampCTF_2025" | split: "," %}
@@ -90,3 +120,4 @@ a:hover {
     {% endif %}
   </div>
 {% endfor %}
+</div>
