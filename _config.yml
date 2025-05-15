@@ -337,3 +337,6 @@ collections:
   Kind4SUS_CTF:
     output: true
     permalink: /Kind4SUS_CTF/:title/
+  Squ1rrel_CTF2025:
+    output: true
+    permalink: /Squ1rrel_CTF2025/:title/
