@@ -2,4 +2,18 @@
 layout: home
 author_profile: true
 ---
-<a href="Cyber_Apocalypse_CTF_2025_Tales_from_Eldoria/">Cyber Apocalypse CTF 2025: Tales from Eldoria</a><br>
+
+<h2>All Writeups</h2>
+
+{% assign collections = "Cyber_Apocalypse_CTF_2025_Tales_from_Eldoria,Kind4SUS_CTF,SwampCTF_2025" | split: "," %}
+{% for coll in collections %}
+  <h3>{{ coll | replace: "_", " " }}</h3>
+  <ul>
+    {% for post in site[coll] %}
+      <li>
+        <a href="{{ post.url }}">{{ post.title }}</a>
+        <span style="color:gray;">({{ post.date | date: "%Y-%m-%d" }})</span>
+      </li>
+    {% endfor %}
+  </ul>
+{% endfor %}
