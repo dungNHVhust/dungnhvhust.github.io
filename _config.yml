@@ -331,13 +331,9 @@ collections:
   Cyber_Apocalypse_CTF_2025_Tales_from_Eldoria:
     output: true
     permalink: /Cyber_Apocalypse_CTF_2025_Tales_from_Eldoria/:title/
-
-collections:
   SwampCTF_2025:
     output: true
     permalink: /SwampCTF_2025/:title/
-
-collections:
   Kind4SUS_CTF:
     output: true
     permalink: /Kind4SUS_CTF/:title/
