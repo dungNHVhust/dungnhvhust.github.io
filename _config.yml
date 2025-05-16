@@ -342,4 +342,4 @@ collections:
     permalink: /Squ1rrel_CTF2025/:title/
   BKSEC_Challenge_Of_The_Day:
     output: true
-    permalink: /BKSEC_Challenge_Of_The_Day/:title
+    permalink: /BKSEC_Challenge_Of_The_Day/:title/
