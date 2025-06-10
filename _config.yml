@@ -343,3 +343,6 @@ collections:
   BKSEC_Challenge_Of_The_Day:
     output: true
     permalink: /BKSEC_Challenge_Of_The_Day/:title/
+  HACK-THE-BOX_Academy:
+    output: true
+    permalink: /HACK-THE-BOX_Academy/:title
