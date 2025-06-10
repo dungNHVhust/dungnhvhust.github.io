@@ -1,3 +1,9 @@
+---
+layout: default
+title: "Linux Privlege Escalation Skill Assessment"
+date: 2025-06-10 00:00:00 +0700
+tags: [CTF]
+---
 # Flag 1:
 ```bash
 htb-student@nix03:~$ find / 2>/dev/null | grep "flag*"
