@@ -1,47 +1,39 @@
-name: build
+name: Build and Deploy Hexo
 
 on:
   push:
     branches:
       - master
   workflow_dispatch: {}
-  repository_dispatch: {}
 
 jobs:
-  build:
-    if: github.repository == 'mmistakes/minimal-mistakes'
+  build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
-    - uses: ruby/setup-ruby@v1
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        ruby-version: '3.2'
-    - name: Setup cache for Bundler
-      id: cache
-      uses: actions/cache@v4
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install Dependencies
+      run: npm ci
+
+    - name: Build Hexo
+      run: npm run build
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
       with:
-        path: |
-          docs/Gemfile.lock
-          docs/vendor/bundle
-        key: ${{ runner.os }}-bundler-${{ hashFiles('docs/Gemfile') }}
-        restore-keys: |
-          ${{ runner.os }}-bundler-
-
-    - name: Install - Bundler
-      env:
-        MAKE: make -j2
-      working-directory: docs/
-      run: |
-        bundle config set path vendor/bundle
-        bundle install --jobs=4 --retry=3
-        bundle clean
-
-    - name: Update Algolia index
-      working-directory: docs/
-      run: bundle exec jekyll algolia push
-      env:
-        ALGOLIA_API_KEY: ${{ secrets.ALGOLIA_API_KEY }}
-      continue-on-error: true
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public
+        publish_branch: gh-pages
+        force_orphan: true
