@@ -19,6 +19,11 @@ jobs:
         fetch-depth: 0
         submodules: recursive
 
+    - name: Update submodules
+      run: |
+        git submodule update --init --recursive
+        ls -la themes/
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
