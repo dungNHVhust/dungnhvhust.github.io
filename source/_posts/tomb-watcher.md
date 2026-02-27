@@ -3,7 +3,7 @@ layout: single
 title: "TombWatcher"
 date: 2025-10-23 16:00:00 +0700
 categories: [HackTheBox]
-tags: [CTF, Web, ActiveDirectory , Machine]
+tags: [CTF, Web, ActiveDirectory , Machine, Hackthebox]
 ---
 # Recon 
 ## nmap
