@@ -132,8 +132,8 @@ home_banner:
   style: fixed # static or fixed
   # Home banner image
   image: 
-    light: /images/malta_light.png # light mode
-    dark: /images/malta_dark.png # dark mode
+    light: /images/LofiCafe_light.png # light mode
+    dark: /images/LofiCafe_dark.png # dark mode
   # Home banner title
   title: Hi, I'm Taneora.
   # Home banner subtitle
