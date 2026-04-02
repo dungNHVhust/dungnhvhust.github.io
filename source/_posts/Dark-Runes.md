@@ -49,6 +49,20 @@ Có thể sử dụng POC để đọc nội dung flag:
 ## Brute force access_pass
 Để trigger CVE-2023-0835, cần phải sử dụng hàm `generatePDF()` ở chức năng tạo pdf.
 
+```js
+const generatePDF = async (content) => {
+
+  return new Promise((resolve, reject) => {
+    markdownpdf({ remarkable: { html: true } })
+      .from.string(content)
+      .to.buffer(undefined, (err, buffer) => {
+        if (err != null) return reject(err);
+        return resolve(buffer);
+      });
+  });
+};
+```
+
 Có 2 endpoit cho phép làm điều này: `[GET] /document/export/:id` và `[POST] /document/debug/export`.
 
 Tuy nhiên ở `[GET] /document/export/:id` , content đã bị đưa qua hàm `nhm.translate()`, lúc này content sẽ được chuyển từ HTML sang Markdown nên bị mất các thẻ HTML gốc làm hỏng payload.
