@@ -9,23 +9,33 @@ tags: [CTF, Web, Prototype Pollution , Challenge ,Hackthebox]
 
 ## Tổng quan
 
-Bài `secure_notes` là một web challenge Node.js + MongoDB, với 2 ý chính phải ghép lại với nhau:
+Đây là một web challenge Node.js/Express kết hợp MongoDB (Mongoose). Ứng dụng là một dịch vụ ghi chú với giao diện tĩnh ở phía client; người chơi có thể tạo, đọc, cập nhật note qua API JSON. Dữ liệu note được lưu trong MongoDB nội bộ, còn ứng dụng được chạy cùng MongoDB trong một container (supervisord quản lý cả 2 process).
 
-1. Mongoose `7.2.4` dính `CVE-2023-3696`, cho phép prototype pollution thông qua các hàm update như `findByIdAndUpdate()`.
-2. Route `/flag` không tin vào header, mà kiểm tra `req.connection.remoteAddress` để chỉ cho localhost đọc flag.
+Luồng chính của app:
 
-Điểm hay của bài là primitive prototype pollution không phải pollute `remoteAddress` trực tiếp, mà phải pollute đúng field nội bộ mà Node dùng để tính ra `remoteAddress`.
+1. Người dùng mở giao diện notes.
+2. Front-end gọi API để tạo note, lấy note theo id và cập nhật note.
+3. Có một endpoint đặc biệt trả flag, nhưng chỉ cho phép khi server nhận diện request đến từ localhost.
 
-Dependency trong `challenge/src/package.json`:
+Cấu trúc endpoint chính:
 
-```json
-"dependencies": {
-  "express": "^4.18.2",
-  "mongoose": "^7.2.4"
-}
+```text
+├── /
+│ └── GET [guest] - Trả giao diện chính (static index)
+├── /update.html
+│ └── GET [guest] - Trang chỉnh sửa note (static)
+├── /style.css
+│ └── GET [guest] - CSS giao diện (static)
+├── /create
+│ └── POST [guest] - Tạo note mới (title, content)
+├── /get/:noteId
+│ └── GET [guest] - Lấy note theo id
+├── /update
+│ └── POST [guest] - Cập nhật note theo noteId 
+└── /flag
+└── GET [localhost only] - Trả FLAG nếu request được nhận diện từ 127.0.0.1 / ::1 / ::ffff:127.0.0.1
 ```
 
-Phiên bản `mongoose 7.2.4` nằm trong range bị ảnh hưởng bởi `CVE-2023-3696`.
 
 ## Phân tích route `/flag`
 
@@ -231,3 +241,22 @@ Payload cuối cùng:
   }
 }
 ```
+
+## Tổng kết
+Bài `secure_notes` là một web challenge Node.js + MongoDB, với 2 ý chính phải ghép lại với nhau:
+
+1. Mongoose `7.2.4` dính `CVE-2023-3696`, cho phép prototype pollution thông qua các hàm update như `findByIdAndUpdate()`.
+2. Route `/flag` không tin vào header, mà kiểm tra `req.connection.remoteAddress` để chỉ cho localhost đọc flag.
+
+Điểm hay của bài là primitive prototype pollution không phải pollute `remoteAddress` trực tiếp, mà phải pollute đúng field nội bộ mà Node dùng để tính ra `remoteAddress`.
+
+Dependency trong `challenge/src/package.json`:
+
+```json
+"dependencies": {
+  "express": "^4.18.2",
+  "mongoose": "^7.2.4"
+}
+```
+
+Phiên bản `mongoose 7.2.4` nằm trong range bị ảnh hưởng bởi `CVE-2023-3696`.

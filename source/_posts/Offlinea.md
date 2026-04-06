@@ -8,6 +8,21 @@ tags: [CTF, Web, SSRF, SSTI , Challenge ,Hackthebox]
 # Offlinea - Easy - Web
 
 ## Tổng quan
+Đây là một web challenge kết hợp PHP front-end và Flask/Selenium back-end. Luồng chính là người chơi nhập URL, name và secret ở giao diện ngoài; PHP sẽ kiểm tra URL cơ bản để chống SSRF rồi chuyển tiếp request sang Flask để mở trang bằng Chrome headless, xuất PDF và ghi lại lịch sử vào SQLite. 
+
+```text
+├── /index.html
+│   └── GET  [guest]  - Trang giao diện chính
+├── /bartender.php
+│   └── GET  [guest]  - Front-end PHP nhận URL, kiểm tra rồi forward sang backend
+├── /generate
+│   └── GET  [guest/internal] - Selenium mở URL, export PDF, lưu name/secret vào DB
+├── /logs
+│   └── GET  [guest]  - Hiển thị history từ SQLite
+└── /bartender
+    └── GET  [token]   - Trả về secrets nếu JWT hợp lệ
+```
+
 Challenge này gồm 2 bug chain lại: SSRF + SSTI -> leak secret key để lấy flag.
 
 ## SSRF 

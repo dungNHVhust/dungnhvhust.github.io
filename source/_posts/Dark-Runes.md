@@ -7,6 +7,33 @@ tags: [CTF, Web, Challenge ,Hackthebox]
 ---
 # Dark Runes - Easy - Web
 ## Tổng quan
+Đây là 1 web challenge sử dụng NodeJS với các chức năng chính là tạo/xem/xóa document từ HTML.Ngoài ra còn chức năng export pdf và endpoint debug export dành cho admin.
+
+```
+
+|── /login
+│   └── GET  [guest]  - Hiển thị form đăng nhập
+├── /register
+│   └── GET  [guest]  - Hiển thị form đăng ký
+├── /login
+│   └── POST [guest]  - Xác thực tài khoản, set cookie đăng nhập
+├── /register
+│   └── POST [guest]  - Tạo tài khoản mới
+├── /documents
+│   ├── GET  [auth]   - Liệt kê document của user hiện tại
+│   └── POST [auth]   - Tạo document mới từ nội dung HTML
+├── /documents/new
+│   └── GET  [auth]   - Hiển thị form tạo document
+├── /document/:id
+│   └── GET  [auth]   - Xem nội dung document
+├── /document/:id/delete
+│   └── POST [auth]   - Xóa document
+├── /document/export/:id
+│   └── GET  [auth + admin] - Export document sang PDF
+└── /document/debug/export
+    └── POST [auth + admin] - Debug export PDF từ content nhập vào
+```
+
 Challenge này gồm chuỗi 2 bug logic (privilege escalation + brute force access_pass) kết hợp với CVE-2023-0835 (local file read via server-side XSS) để đọc flag.
 
 ## Privilege escalation

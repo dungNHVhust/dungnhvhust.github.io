@@ -6,6 +6,15 @@ categories: [HackTheBox]
 tags: [CTF, Web, Linux , Machine ,Hackthebox]
 ---
 # WingData - Linux - Easy
+## Tổng quan
+Machine gồm 2 service chính:
+- Web Server : Apache (port 80)
+- SSH (port 22)
+
+Web service là kiểu website giới thiệu công ty,gồm các page cơ bản: Home , About , Services , Contact.
+Ngoài ra có cổng đăng nhập riêng ( Client Portal ) dẫn tới `ftp.wingdata.htb` sử dụng Wing FTP Server Web Client (v7.4.3).
+
+
 ## User flag
 Scan với nmap:
 ```bash
@@ -20,7 +29,7 @@ PORT   STATE SERVICE VERSION
 80/tcp open  http    Apache httpd 2.4.66
 Service Info: Host: localhost; OS: Linux; CPE: cpe:/o:linux:linux_kernel
 ```
-Sau khi enum phát hiện web service bị dính `CVE 2025-47812` dẫn đến RCE.
+Sau khi enum phát hiện Wing FTP Server Web Client (v7.4.3) bị dính `CVE 2025-47812` (Unauthenticated RCE) cho phép RCE không cần login qua web FTP client.
 
 Sử dụng [poc](https://github.com/4m3rr0r/CVE-2025-47812-poc) để rev shell về:
 ```bash
