@@ -4,6 +4,7 @@ title: "Offlinea"
 date: 2026-03-31 17:00:00 +0700
 categories: [HackTheBox]
 tags: [CTF, Web, SSRF, SSTI , Challenge ,Hackthebox]
+password: "HTB{active1705}"
 ---
 # Offlinea - Easy - Web
 
