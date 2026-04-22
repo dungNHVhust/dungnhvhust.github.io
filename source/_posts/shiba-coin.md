@@ -468,3 +468,19 @@ Sơ đồ khai thác :
 ```
 
 
+<script>
+function forceLoadImages() {
+  document.querySelectorAll("img").forEach(img => {
+    if (img.dataset && img.dataset.src) {
+      img.src = img.dataset.src;
+      img.removeAttribute("lazyload");
+    }
+  });
+}
+
+// chạy lần đầu
+forceLoadImages();
+
+// chạy lại mỗi khi Swup load page
+document.addEventListener("swup:contentReplaced", forceLoadImages);
+</script>
