@@ -25,11 +25,11 @@ info:
 # Docs: https://redefine-docs.ohevan.com/basic/defaults
 defaults:
   # Favicon
-  favicon: images/0xgnud17.jpg
+  favicon: images/taneora.jpg
   # Site logo
   logo:
   # Site avatar
-  avatar: images/0xgnud17.jpg
+  avatar: images/taneora.jpg
 # IMAGE CONFIGURATION <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 
 
@@ -100,7 +100,7 @@ global:
   open_graph:
     enable: false
     title: 0xgnud17's blog
-    image: /images/0xgnud17.jpg  # default og:image
+    image: /images/taneora.jpg  # default og:image
     description: I'm 0xgnud17, Offensive Security Expert (Gonna be - Wanna be)?!.
   # Google Analytics
   google_analytics:
