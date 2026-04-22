@@ -6,11 +6,6 @@ categories: [Cyber-Apocalypse-CTF-2025]
 tags: [CTF, Web]
 ---
 # [web] Eldoria panel - web - medium
->Author: Taneora
-- Tên: Eldoria panel
-- Description: A development instance of a panel related to the Eldoria simulation was found. Try to infiltrate it to reveal Malakar's secrets.
-- *Có source code*
-----
 
 ## Phân tích
 
