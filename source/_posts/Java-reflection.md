@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "Java Reflection"
-date: 2025-04-21 00:00:00 +0700
+date: 2026-04-21 00:00:00 +0700
 categories: [Java]
 tags: [Java, Java Deserialize, Java Reflection]
 ---

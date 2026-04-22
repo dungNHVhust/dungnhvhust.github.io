@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "Phân tích gadget URLDNS"
-date: 2025-04-21 09:00:00 +0700
+date: 2026-04-21 09:00:00 +0700
 categories: [Java]
 tags: [Java, Java Deserialize, URLDNS]
 ---
