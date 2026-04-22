@@ -13,7 +13,7 @@ tags: [CTF, BKSEC, Blockchain]
 ## Phân tích
 ### Phân tích source code:
 Phát hiện web có dùng JNDI Service với LDAP và `com.sun.jndi.ldap.object.trustSerialData` đã được bật lại,điều này cho phép LDAP có khả năng load được class động.
-[image](/images/shiba-coin_01.png)
+![image](images/shiba-coin_01.png)
 
 ```java=
 public class JndiService {
