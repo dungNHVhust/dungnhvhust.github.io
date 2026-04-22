@@ -4,6 +4,7 @@ title: "WingData"
 date: 2026-03-03 16:00:00 +0700
 categories: [HackTheBox]
 tags: [CTF, Web, Linux , Machine ,Hackthebox]
+password: "HTB{active1705}"
 ---
 # WingData - Linux - Easy
 ## Tổng quan

@@ -4,6 +4,7 @@ title: "Dark-Runes"
 date: 2026-04-01 23:00:00 +0700
 categories: [HackTheBox]
 tags: [CTF, Web, Challenge ,Hackthebox]
+password: "HTB{active1705}"
 ---
 # Dark Runes - Easy - Web
 ## Tổng quan

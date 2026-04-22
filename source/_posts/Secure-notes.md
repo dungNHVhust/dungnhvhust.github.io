@@ -4,6 +4,7 @@ title: "Secure Notes"
 date: 2026-03-12 15:00:00 +0700
 categories: [HackTheBox]
 tags: [CTF, Web, Prototype Pollution , Challenge ,Hackthebox]
+password: "HTB{active1705}"
 ---
 # Secure Notes - Easy - Web
 
