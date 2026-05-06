@@ -25,11 +25,12 @@ File  Action  Edit  View  Help
 ⁍ Name : Nguyen Huy Vu Dung
 ⁍ ??   : Offensive Security Expert (Gonna be - Wanna be)?!
 ⁍ ??   : Computer Engineering Student @ Hanoi University Of Science And Technology
-⁍ ??   : Penetration Tester at ...
+⁍ ??   : Application Security Intern at Vi***C
 
 : Learning :
-==> Source Code Analysis (White Box Testing)
+==> Application Security (Web,Mobile)
 ==> Black Box Testing 
+==> Source Code Analysis
 ==> Red Teaming (Reconnaissance , Post-exploitation , Privilege escalation , Active Directory) (a lil' bit).
 
 ```
