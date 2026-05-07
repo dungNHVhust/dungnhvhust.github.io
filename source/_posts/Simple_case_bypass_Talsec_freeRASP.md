@@ -5,9 +5,9 @@ date: 2026-05-06 10:00:00 +0700
 categories: [Mobile]
 tags: [Mobile, Android, Talsec ]
 ---
-
-# Tổng quan
-Một real case (maybe đơn giản) mình được ông anh ném cho vọc.
+#
+## Case 1
+Một vài real case (maybe đơn giản) mình được ông anh ném cho vọc.
 
 Ban đầu khi cài đặt và mở app trên con android đã ẩn root và bật sẵn `frida-server` thì bị văng app sau 30s.
 Do khá tự tin về khả năng ẩn root, ẩn unlock botloader , ẩn usb debug trên máy của mình nên khả năng chỉ có thể là `frida` đã bị detech.
@@ -52,7 +52,7 @@ Có 1 số lib khả nghi ở đây :
 - `libsecurity.so` : là thư viện Talsec Security dùng cho RASP: anti-Frida, root detection, threat checks.
 - `libpolarssl.so` : Chưa có thông tin.
 
-## Bypass Anti-Frida
+### Bypass Anti-Frida
 
 Bắt đầu với `libsecurity.so`. Sử dụng `IDA Pro` ~~và 100% Claude~~ để rev lib này, tìm thấy cách app detech Frida:
 
@@ -167,7 +167,7 @@ Spawned com.samsung.xxxx.xxxx. Resuming main thread!
 [+] Blocked connect() to 127.0.0.1:27042
 ```
 
-## Bypass check root
+### Bypass check root
 
 Cũng ở `libsecurity.so`, app có 1 số cơ chế để check root:
 
@@ -216,7 +216,7 @@ try {
 }
 ```
 
-## Bypass SSL Pinning
+### Bypass SSL Pinning
 
 Sau khi đã bypass anti-frida và check root thành công, cần bypass nốt SSL Pinning để bắt request.
 
@@ -472,6 +472,132 @@ Bắt được request
   <img src="https://dungnhvhust.github.io/images/adr17.png" data-src-ignore>
 </picture>
 
+
+
+## Case 2
+### Bypass ở `libclib.so`
+Nhìn tổng quan thì app này cũng tương tự như case 1. Thử sửa lại offset và chạy script của app 1 thì bypass được check frida và check root, app hoạt động bình thường nhưng không bắt được request.
+
+Nhảy vào ~~Claude~~ rev `libclib.so` thì phát hiện app này triển khai SSL khác với app 1.
+
+Qua RE trên `libclib.so`, flow chính là:
+
+- `sub_2575F4` khởi tạo `SSL_CTX`, cấu hình TLS, gọi `SSL_CTX_set_verify(ctx, mode, NULL)`
+- `sub_259DD8` thực hiện `SSL_connect` trong loop
+- Sau khi handshake thành công, `sub_259DD8` gọi trực tiếp `sub_258204`
+- `sub_258204` làm phần verify thực tế:
+  - kiểm tra chain
+  - kiểm tra OCSP
+  - kiểm tra public-key pin
+- public-key pin nằm ở `sub_253B58`
+
+`sub_253B58` so sánh public key của peer cert với pin format:
+
+```text
+sha256//<base64>
+```
+
+Convention trả về của lớp này:
+- `0` = success / pin match
+- `90` = mismatch
+
+Vì vậy bypass đúng là ép các hàm verify nội bộ này về `0`, không phải `1`.
+
+Tuy nhiên sau khi hook thành công thì chỉ bắt được duy nhất request đến server của talsec :
+```
+POST /tlpafw HTTP/2
+Host: query.atidevs.com
+Accept: */*
+Authorization: ApiKey Skx2Sjcza0JUWixxxxxxxxxxxxEtVRWRBSURULVdlMm1uQVZabUVTdw==
+Sdk-Identifier: com.samsung.xxxx.xxxxxxxxx
+Req-Integrity: value=kLunDQYsoX58ixLxxxxxsxzM2fawewNtZgzJ4riQ=;id=atidevs-prod;version=1
+Content-Type: application/json
+Content-Length: 1654
+
+{"instanceId":"50eaff99-94e0-4f9c-aa7c-32cdbf3f5d00","sdkVersion":"14.0.1","platform":"Android","deviceInfo":{"osVersion":"16","manufacturer":"Google","model":"Pixel 6a"},"deviceId":{"androidId":"c4f93600b0afdf19","mediaDrm":"bf406a95da9ec2f9505d236dfa123f462c33c41ae2ef61fa739661753c7fda33","fingerprintV3":"24fd9f2c3f3f0b55108cacc9edba081b"},"loggingSslPinning":true,"occurence":"2026-05-06T15:06:26.992000+0700","appInfo":{"appIdentifier":"com.samsung.xxxx.xxxxxxxxx","certHash":"TXAXpsr1rblOukuGwXDW9RjGH0aLiVM76am0EUurH7s=","appVersion":"2.0.13","installationSource":"com.android.shell"},"deviceState":{"security":"unlocked","biometrics":"noneEnrolled","hwBackedKeychain":"StrongBox","isAdbEnabled":"true","hasGoogleMobileServices":true,"hasHuaweiMobileServices":false,"selinuxProperties":{"buildSelinuxProperty":"none","selinuxMode":"none","bootSelinuxProperty":"none","selinuxEnforcementFileContent":"error","selinuxEnabledReflect":"true","selinuxEnforcedReflect":"false"},"securityPatch":"2026-03-05"},"sdkState":{"beatExecutionState":"Active","controlExecutionState":"Running - 63"},"checks":{"unofficialStore":{"status":"NOK","timeMs":2},"debug":{"status":"OK","timeMs":1},"simulator":{"status":"OK","timeMs":1403},"privilegedAccess":{"status":"NOK","timeMs":1021},"monitoring":{"status":"OK","timeMs":0},"appIntegrity":{"status":"NOK","timeMs":2929},"hooks":{"status":"NOK","timeMs":361}},"sessionId":"a27255ed-a66f-4cba-9507-9de816b59515","sdkPlatform":"Flutter","sdkIdentifier":"com.samsung.xxxx.xxxxxxxxx","watcherMail":"","incidentReport":{"featureTestingIgnored":{"isHookHoneypotDetectedFeatureTesting2":"true"},"type":"hooks"}}
+```
+Có thể đây là request tracking trạng thái để gửi về server của Tailsec.
+
+Đến đây sau 1 lúc loay hoay thì mình nghĩ rằng có thể app này triển khai SSL ở chỗ khác nữa, ở `libclib.so` chỉ triển khai SSL của Talsec thôi.
+
+### Bypass libflutter.so
+
+Thử với script vẫn hay dùng với những app triển khai SSL trong `libflutter.so` thì hook thành công và bắt được request.
+
+<picture>
+  <img src="https://dungnhvhust.github.io/images/adr18.png" data-src-ignore>
+</picture>
+
+Do đó có thể chắc chắn traffic API chính không đi qua `libclib.so` mà đi qua engine Flutter trong `libflutter.so`, dùng `BoringSSL statically linked`.
+
+Điều này dẫn tới hai hệ quả:
+
+1. Không thể hook tìm hàm theo kiểu `findExportByName("SSL_CTX_set_verify")` như với OpenSSL/libcurl
+2. Muốn hook phải tìm hàm theo pattern / string / control-flow, không phải theo export name
+
+Vì BoringSSL được compile thẳng vào `libflutter.so` dưới dạng static link và binary release đã strip symbol/không export các hàm SSL nội bộ, nên không còn symbol như `SSL_CTX_set_verify` trong `.dynsym` để `findExportByName()` tìm được; do đó phải lần theo dấu vết còn sót lại như string (`ssl_client`), xref và control-flow để xác định hàm verify cần hook.
+
+Ta sẽ lần theo 2 string:
+- string `ssl_client\0`
+- string `Socket_CreateConnect\0`
+
+Từ `ssl_client\0`:
+- scan trong `.rodata`
+- tìm instruction sequence trong `.text` tham chiếu tới string đó
+- trace ngược về prologue hàm
+- suy ra được hàm `verify_cert_chain`
+
+Ở phía Flutter/BoringSSL, `verify_cert_chain` dùng convention kiểu boolean:
+- `0` = fail
+- `1` = success
+
+Vì vậy chỉ cần tìm `verify_cert_chain` rồi hook vào `onLeave`,nếu retval là fail (`0`) thì đổi thành success (`1`).
+
+Tương tự với `Socket_CreateConnect`, tìm `Socket_CreateConnect` , từ đó lần tới `GetSockAddr` ,hook `GetSockAddr` để lấy `sockaddr` rồi hook `socket()` để sửa destination IP/port sang Burp.
+
+```
+Spawning `com.samsung.xxxx.xxxxxx`...
+[.] Starting Bypass Script...
+[+] Hooked getenv (curl proxy)
+[+] Hooked connect (port 27042 block)
+[+] Hooked strstr (frida hiding)
+Spawned `com.samsung.xxxx.xxxxxx`. Resuming main thread!
+[Remote::com.samsung.xxxx.xxxxxx ]-> [+] Found libflutter.so @ 0x7b8cc7f000
+[*] hookFlutter: resolving libc exports
+[*] open=0x7f9b72ec40 close=0x7f9b726150 lseek=0x7f9b7891c0 read=0x7f9b788380
+[*] libflutter path: /data/app/~~xVjRqFHsfQK-OvLNsWqu5g==/com.samsung.xxxx.xxxxxx-whWYvVQ-YLKbmUDRgSSpeQ==/base.apk!/lib/arm64-v8a/libflutter.so
+[*] open(fd) = -1
+[*] ELF parse result: rodata_memsz=0x42d654 text_vaddr=0x43d680 text_memsz=0x5a2cd0 relro_vaddr=0x9f0350 relro_memsz=0x63cb0
+[*] ELF parsed: rodata=0x42d654 textVaddr=0x43d680 textSize=0x5a2cd0 relroVaddr=0x9f0350 relroSize=0x63cb0
+[*] ssl_client string @ 0x7b8ce345b1
+[*] Socket_CreateConnect string @ 0x7b8ce3585f
+[*] Socket_CreateConnect @ 0x7b8d47c3a0
+[*] GetSockAddr @ 0x7b8d482a30
+[+] Flutter traffic redirect installed
+[*] verify_cert_chain @ 0x7b8d35aef4
+[+] Hooked verify_cert_chain (flutter SSL bypass)
+[+] Found libsecurity.so @ 0x7b682e9000
+[+] Hooked afld @ 0x7b682f191c
+[+] Hooked ifpip @ 0x7b682f1668
+[+] Hooked ifsl @ 0x7b682f187c
+[+] Hooked JNI wrapper @ 0x7b682f19d4 -> Java_com_aheaditec_talsec_1security_security_Natives_e
+[+] Hooked JNI wrapper @ 0x7b682f1a24 -> Java_com_aheaditec_talsec_1security_security_Natives_f
+[+] Hooked JNI wrapper @ 0x7b682f1a74 -> Java_com_aheaditec_talsec_1security_security_Natives_g
+[+] Talsec anti-Frida bypass ready
+[+] Found libclib.so @ 0x7b630bd000
+[+] Hooked SSL_get_verify_result @ 0x7b634aff08
+[+] Hooked X509_verify_cert @ 0x7b6344712c
+[*] No symbol for curl verify/pin funcs, falling back to offsets
+[+] Hooked curl_verify_callback @ 0x7b63315204
+[+] Hooked curl_pin_check @ 0x7b63310b58
+[+] SSL bypass ready (libclib.so)
+[+] flutter socket redirect -> 172.20.10.2:8080
+[+] flutter socket redirect -> 172.20.10.2:8080
+[+] flutter socket redirect -> 172.20.10.2:8080
+[+] flutter verify_cert_chain bypass
+[+] X509_verify_cert -> 1
+```
+
 <script>
 function forceLoadImages() {
   document.querySelectorAll("img").forEach(img => {
@@ -481,7 +607,6 @@ function forceLoadImages() {
     }
   });
 }
-
 // chạy lần đầu
 forceLoadImages();
 
