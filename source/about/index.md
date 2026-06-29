@@ -17,7 +17,7 @@ date: 2025-01-01 00:00:00
 </span>
 </div>
 <div class="about-name-block">
-<div class="about-section-tag">§ OPERATOR PROFILE</div>
+<!-- <div class="about-section-tag">§ OPERATOR PROFILE</div> -->
 <h1 class="about-name">0xgnud</h1>
 <div class="about-callsign">// Nguyễn Huy Vũ Dũng</div>
 <div class="about-location">↳ Hanoi, Vietnam</div>
@@ -55,7 +55,7 @@ date: 2025-01-01 00:00:00
 <li class="about-stat"><span class="about-stat-num">20,695</span><span class="about-stat-label">TOTAL XP</span></li>
 <li class="about-stat"><span class="about-stat-num">LV 40</span><span class="about-stat-label">LEVEL</span></li>
 <li class="about-stat"><span class="about-stat-num">2</span><span class="about-stat-label">MAX STREAK</span></li>
-<li class="about-stat"><span class="about-stat-num">65%</span><span class="about-stat-label">TO NEXT</span></li>
+<li class="about-stat"><span class="about-stat-num">35%</span><span class="about-stat-label">TO NEXT</span></li>
 </ul>
 <a class="about-htb-link" href="https://profile.hackthebox.com/profile/019daf22-08ab-71d0-b49d-5b3656b0437f" target="_blank" rel="noopener noreferrer">VIEW PROFILE</a>
 </section>
