@@ -1,0 +1,923 @@
+/* =========================================================================
+   CRT-TERMINAL RESKIN for hexo-theme-redefine
+   Matches the LazyBlog (blog/) phosphor-radio aesthetic.
+   Loaded via inject.head AFTER redefine's own CSS, so plain CSS wins.
+   Themes: redefine .dark  -> GREEN phosphor  (default)
+           redefine .light -> CRYPT  blood-red
+   ========================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Play:wght@400;700&family=Share+Tech+Mono&family=VT323&display=swap');
+
+/* ---------- Theme tokens : GREEN (dark default) ---------- */
+html.dark {
+    --background-color: #0a0e0a !important;
+    --background-color-transparent: rgba(15, 26, 15, 0.6) !important;
+    --background-color-transparent-80: rgba(15, 26, 15, 0.8) !important;
+    --background-color-transparent-40: rgba(15, 26, 15, 0.4) !important;
+    --background-color-transparent-15: rgba(15, 26, 15, 0.15) !important;
+    --second-background-color: #0f1a0f !important;
+    --third-background-color: #142114 !important;
+    --third-background-color-transparent: rgba(20, 33, 20, 0.6) !important;
+    --primary-color: #39ff14 !important;
+    --default-text-color: #d8efd0 !important;
+    --invert-text-color: #0a0e0a !important;
+    --first-text-color: #e8f7e0 !important;
+    --second-text-color: #d8efd0 !important;
+    --third-text-color: #9ac890 !important;
+    --fourth-text-color: #5a7a55 !important;
+    --border-color: #1e3a1e !important;
+    --selection-color: #39ff14 !important;
+    --shadow-color-1: rgba(57, 255, 20, 0.08) !important;
+    --shadow-color-2: rgba(57, 255, 20, 0.05) !important;
+    --shadow-hover-color: rgba(57, 255, 20, 0.28) !important;
+    --scrollbar-color: #2a5a28 !important;
+    --scrollbar-color-hover: #39ff14 !important;
+    --scroll-bar-bg-color: #0a0e0a !important;
+    --link-color: #8aff70 !important;
+    --copyright-info-color: #39ff14 !important;
+    --avatar-background-color: #1a7a08 !important;
+    --pjax-progress-bar-color: linear-gradient(45deg, #39ff14, #8aff70) !important;
+    --crt-scan: rgba(57, 255, 20, 0.03);
+    --crt-primary-glow: rgba(57, 255, 20, 0.15);
+    --crt-primary-glow-strong: rgba(57, 255, 20, 0.30);
+}
+
+/* ---------- Theme tokens : CRYPT (light toggle) ---------- */
+html.light {
+    --background-color: #0a0303 !important;
+    --background-color-transparent: rgba(26, 8, 8, 0.6) !important;
+    --background-color-transparent-80: rgba(26, 8, 8, 0.8) !important;
+    --background-color-transparent-40: rgba(26, 8, 8, 0.4) !important;
+    --background-color-transparent-15: rgba(26, 8, 8, 0.15) !important;
+    --second-background-color: #1a0808 !important;
+    --third-background-color: #221010 !important;
+    --third-background-color-transparent: rgba(34, 16, 16, 0.6) !important;
+    --primary-color: #ff2418 !important;
+    --default-text-color: #efc8c0 !important;
+    --invert-text-color: #0a0303 !important;
+    --first-text-color: #f8d8d0 !important;
+    --second-text-color: #efc8c0 !important;
+    --third-text-color: #c89a90 !important;
+    --fourth-text-color: #7a5a55 !important;
+    --border-color: #3a1e1e !important;
+    --selection-color: #ff2418 !important;
+    --shadow-color-1: rgba(255, 36, 24, 0.08) !important;
+    --shadow-color-2: rgba(255, 36, 24, 0.05) !important;
+    --shadow-hover-color: rgba(255, 36, 24, 0.28) !important;
+    --scrollbar-color: #5a1810 !important;
+    --scrollbar-color-hover: #ff2418 !important;
+    --scroll-bar-bg-color: #0a0303 !important;
+    --link-color: #ff8a7a !important;
+    --copyright-info-color: #ff2418 !important;
+    --avatar-background-color: #7a1008 !important;
+    --pjax-progress-bar-color: linear-gradient(45deg, #ff2418, #ff8a7a) !important;
+    --crt-scan: rgba(255, 36, 24, 0.03);
+    --crt-primary-glow: rgba(255, 36, 24, 0.15);
+    --crt-primary-glow-strong: rgba(255, 36, 24, 0.30);
+}
+
+/* =========================================================================
+   GLOBAL TYPOGRAPHY
+   ========================================================================= */
+html, body {
+    font-family: 'Play', system-ui, sans-serif !important;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Phosphor headings + chromatic aberration (copied from blog base.css) */
+h1, h2, h3, h4, h5, h6,
+.home-article-title,
+.post-title,
+.logo-title,
+.tag-name,
+.archive-year-title,
+.article-title {
+    font-family: 'VT323', monospace !important;
+    color: var(--primary-color) !important;
+    letter-spacing: 2px !important;
+    line-height: 1.1 !important;
+    text-shadow:
+        -1px 0 0 rgba(255, 0, 80, 0.6),
+        1px 0 0 rgba(0, 220, 255, 0.5),
+        0 0 6px var(--primary-color),
+        0 0 22px var(--crt-primary-glow-strong),
+        0 0 56px var(--crt-primary-glow) !important;
+}
+@media (max-width: 600px) {
+    h1, h2, h3, h4, h5, h6,
+    .home-article-title, .post-title, .logo-title, .tag-name {
+        text-shadow:
+            0 0 6px var(--primary-color),
+            0 0 22px var(--crt-primary-glow-strong),
+            0 0 56px var(--crt-primary-glow) !important;
+    }
+}
+/* crypt: primary already red — RGB-split red stacks on itself */
+html.light h1, html.light h2, html.light h3, html.light h4,
+html.light .home-article-title, html.light .post-title, html.light .logo-title {
+    text-shadow:
+        0 0 6px var(--primary-color),
+        0 0 22px var(--crt-primary-glow-strong),
+        0 0 56px var(--crt-primary-glow) !important;
+}
+
+code, pre, .code_block, .gutter {
+    font-family: 'Share Tech Mono', monospace !important;
+    background: var(--second-background-color) !important;
+    border: 1px solid var(--border-color) !important;
+}
+strong { color: var(--primary-color) !important; }
+
+::selection { background: var(--primary-color) !important; color: var(--background-color) !important; text-shadow: none !important; }
+::-moz-selection { background: var(--primary-color) !important; color: var(--background-color) !important; }
+
+/* All underlines dashed — CRT terminal style */
+a {
+    text-decoration-style: dashed !important;
+    text-decoration-thickness: 1px !important;
+    text-underline-offset: 3px !important;
+}
+
+/* =========================================================================
+   CRT OVERLAYS — scanlines / vignette / bezel
+   ========================================================================= */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px, var(--crt-scan) 2px, var(--crt-scan) 4px
+    );
+    pointer-events: none;
+    z-index: 1000;
+}
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 60% 30% at 50% 0%, rgba(255,255,255,0.04) 0%, transparent 70%),
+        radial-gradient(circle 600px at 0% 0%, rgba(0,0,0,0.7) 0%, transparent 60%),
+        radial-gradient(circle 600px at 100% 0%, rgba(0,0,0,0.7) 0%, transparent 60%),
+        radial-gradient(circle 600px at 0% 100%, rgba(0,0,0,0.7) 0%, transparent 60%),
+        radial-gradient(circle 600px at 100% 100%, rgba(0,0,0,0.7) 0%, transparent 60%),
+        radial-gradient(ellipse 90% 100% at 50% 50%, transparent 0%, transparent 45%, rgba(0,0,0,0.35) 90%);
+    pointer-events: none;
+    z-index: 999;
+    mix-blend-mode: multiply;
+}
+html::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    border-radius: 56px;
+    box-shadow:
+        inset 0 0 0 2px rgba(0,0,0,0.4),
+        inset 0 0 100px rgba(0,0,0,0.8),
+        inset 0 0 200px rgba(0,0,0,0.5);
+    pointer-events: none;
+    z-index: 998;
+}
+/* Drop vignette + bezel on mobile */
+@media (max-width: 600px) {
+    body::after { display: none; }
+    html::before { display: none; }
+}
+
+/* Phosphor flicker on home banner */
+@keyframes crt-flicker {
+    0%, 92%, 100% { opacity: 1; }
+    93% { opacity: 0.96; }
+    94% { opacity: 1; }
+    96% { opacity: 0.98; }
+}
+.home-banner-container { animation: crt-flicker 8s infinite; }
+@media (prefers-reduced-motion: reduce) {
+    .home-banner-container { animation: none; }
+}
+
+/* Post title flicker — irregular phosphor dips like a struggling CRT tube */
+@keyframes crt-title-flicker {
+    0%, 19%, 23%, 59%, 63%, 78%, 82%, 100% { opacity: 1; }
+    21% { opacity: 0.7; }
+    61% { opacity: 0.88; }
+    80% { opacity: 0.82; }
+}
+
+/* =========================================================================
+   NAVBAR
+   ========================================================================= */
+.navbar-container {
+    background: transparent !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    backdrop-filter: blur(2px);
+}
+.navbar-content,
+.navbar-bar,
+.navbar-list {
+    background: transparent !important;
+}
+.navbar-item,
+.logo-title {
+    font-family: 'Share Tech Mono', monospace !important;
+    letter-spacing: 2px !important;
+    text-transform: uppercase !important;
+    font-size: 13px !important;
+}
+.navbar-item a,
+.navbar-item .title {
+    color: var(--default-text-color) !important;
+}
+.navbar-item:hover a,
+.navbar-item:hover .title,
+.navbar-item.active a {
+    color: var(--primary-color) !important;
+    text-shadow: 0 0 8px var(--crt-primary-glow-strong) !important;
+}
+.logo-title {
+    font-family: 'VT323', monospace !important;
+    font-size: 26px !important;
+    text-transform: none !important;
+}
+
+/* =========================================================================
+   HOME BANNER
+   ========================================================================= */
+.home-banner-container {
+    text-align: center;
+}
+.home-banner-container .content h1,
+.home-banner-container .title {
+    font-family: 'VT323', monospace !important;
+    font-size: clamp(38px, 9vw, 68px) !important;
+    color: var(--primary-color) !important;
+}
+.home-banner-container .description,
+.home-banner-container .subtitle {
+    font-family: 'Share Tech Mono', monospace !important;
+    color: var(--third-text-color) !important;
+    letter-spacing: 1px;
+    font-size: 13px !important;
+}
+/* Darken + tint the LofiCafe background so it reads under the CRT layers */
+.home-banner-background {
+    filter: grayscale(0.8) contrast(1.1) brightness(0.55) !important;
+    opacity: 0.5 !important;
+}
+
+/* =========================================================================
+   HOME ARTICLE LIST — minimal, titles only feel
+   ========================================================================= */
+.home-article-item {
+    border-bottom: 1px solid var(--border-color) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    transition: border-color 0.22s ease, transform 0.22s ease;
+}
+.home-article-item:hover {
+    transform: translateX(4px);
+}
+.home-article-title {
+    font-size: clamp(28px, 5.2vw, 34px) !important;
+    text-shadow: 0 0 8px var(--crt-primary-glow-strong) !important;
+    margin: 0 !important;
+}
+.home-article-title a {
+    color: var(--primary-color) !important;
+}
+.home-article-item:hover .home-article-title {
+    text-shadow: 0 0 14px var(--primary-color), 0 0 24px var(--crt-primary-glow-strong) !important;
+}
+.home-article-meta-info,
+.article-header-meta-info {
+    font-family: 'Share Tech Mono', monospace !important;
+    font-size: 12px !important;
+    color: var(--third-text-color) !important;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+/* Tag chips on listings */
+.home-article-tag,
+.article-meta-info-tags .tag {
+    display: inline-block !important;
+    padding: 3px 12px !important;
+    border: 1px solid var(--fourth-text-color) !important;
+    color: var(--link-color) !important;
+    font-family: 'Share Tech Mono', monospace !important;
+    font-size: 11px !important;
+    border-radius: 2px !important;
+    letter-spacing: 1px !important;
+    background: transparent !important;
+}
+.home-article-tag:hover,
+.article-meta-info-tags .tag:hover {
+    background: var(--crt-primary-glow) !important;
+    border-color: var(--primary-color) !important;
+}
+
+/* =========================================================================
+   POST PAGE
+   ========================================================================= */
+.post-page-container,
+.article-content-container,
+.article-content {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+.post-page-container .post-title,
+.article-title,
+.article-title-regular {
+    font-size: clamp(32px, 6vw, 44px) !important;
+    color: var(--primary-color) !important;
+    animation: crt-title-flicker 9s infinite 2s;
+}
+@media (prefers-reduced-motion: reduce) {
+    .post-page-container .post-title,
+    .article-title,
+    .article-title-regular { animation: none; }
+}
+.article-content {
+    font-size: 17px !important;
+    line-height: 1.85 !important;
+}
+.article-content h2, .article-content h3 { margin-top: 28px; scroll-margin-top: 24px; }
+.article-content blockquote {
+    border-left: 3px solid var(--primary-color) !important;
+    padding: 8px 16px !important;
+    margin: 16px 0 !important;
+    color: var(--third-text-color) !important;
+    background: var(--second-background-color) !important;
+    box-shadow: none !important;
+}
+.article-content a {
+    color: var(--primary-color) !important;
+}
+/* Post images: NO color wash / overlay — show as-is, just a thin frame */
+.article-content img {
+    border-radius: 2px !important;
+    border: 1px solid var(--border-color) !important;
+    filter: none !important;
+}
+
+/* =========================================================================
+   CODE BLOCKS — HUD frame on grid background
+   ========================================================================= */
+.article-content .code-container,
+.article-content figure.highlight,
+.article-content pre {
+    position: relative;
+    background:
+        repeating-linear-gradient(0deg,
+            var(--crt-scan) 0, var(--crt-scan) 1px,
+            transparent 1px, transparent 6px),
+        repeating-linear-gradient(90deg,
+            var(--crt-scan) 0, var(--crt-scan) 1px,
+            transparent 1px, transparent 6px),
+        var(--second-background-color) !important;
+    border: 1px dashed var(--fourth-text-color) !important;
+    border-radius: 2px !important;
+    box-shadow: none !important;
+}
+.article-content .code-container .copy-button,
+.article-content .copy-button,
+.article-content .fold-button {
+    font-family: 'Share Tech Mono', monospace !important;
+    font-size: 10px !important;
+    line-height: 1.6 !important;
+    padding: 4px 12px !important;
+    background: var(--background-color) !important;
+    border: 1px solid var(--fourth-text-color) !important;
+    color: var(--link-color) !important;
+    letter-spacing: 2px !important;
+    border-radius: 2px !important;
+    opacity: 0.7 !important;
+    top: 8px !important;
+    z-index: 5 !important;
+}
+.article-content .code-container .copy-button { right: 8px !important; }
+.article-content .code-container .fold-button { right: 60px !important; }
+.article-content .code-container:hover .copy-button,
+.article-content .code-container:hover .fold-button,
+.article-content .code-container .copy-button:focus,
+.article-content .code-container .fold-button:focus {
+    opacity: 1 !important;
+}
+.article-content .code-container .copy-button:hover,
+.article-content .fold-button:hover {
+    background: var(--crt-primary-glow) !important;
+    border-color: var(--primary-color) !important;
+    color: var(--primary-color) !important;
+}
+/* highlight.js token coloring — phosphor */
+.hljs-comment, .hljs-quote { color: var(--third-text-color) !important; font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-built_in, .hljs-name, .hljs-tag,
+.hljs-number, .hljs-literal, .hljs-type, .hljs-attr { color: var(--primary-color) !important; }
+.hljs-string, .hljs-title, .hljs-section, .hljs-attribute, .hljs-meta-string { color: var(--link-color) !important; }
+.hljs-function .hljs-title, .hljs-title.function_ { color: var(--link-color) !important; }
+.hljs-variable, .hljs-template-variable, .hljs-params { color: var(--default-text-color) !important; }
+
+/* =========================================================================
+   TOC
+   ========================================================================= */
+.toc-content-container,
+.toc {
+    background: var(--second-background-color) !important;
+    border: 1px solid var(--border-color) !important;
+    border-left: 3px solid var(--primary-color) !important;
+    box-shadow: none !important;
+}
+.toc .toc-item a,
+.toc a {
+    font-family: 'Share Tech Mono', monospace !important;
+    color: var(--default-text-color) !important;
+    font-size: 13px;
+}
+.toc .toc-item.active > a,
+.toc a.active {
+    color: var(--background-color) !important;
+    background: var(--primary-color) !important;
+}
+
+/* =========================================================================
+   TAG / ARCHIVE / CATEGORY PAGES
+   ========================================================================= */
+.tag-cloud a,
+.tag-cloud-list a {
+    font-family: 'Share Tech Mono', monospace !important;
+    border: 1px solid var(--fourth-text-color) !important;
+    padding: 4px 12px !important;
+    border-radius: 2px !important;
+    color: var(--link-color) !important;
+}
+.tag-cloud a:hover,
+.tag-cloud-list a:hover {
+    background: var(--crt-primary-glow) !important;
+    border-color: var(--primary-color) !important;
+}
+.archive-list-item,
+.archive-year {
+    border-bottom: 1px dashed var(--border-color) !important;
+}
+.archive-list-item a {
+    color: var(--primary-color) !important;
+    font-family: 'VT323', monospace !important;
+    font-size: 22px;
+}
+
+/* =========================================================================
+   FOOTER
+   ========================================================================= */
+.footer {
+    border-top: 1px solid var(--border-color) !important;
+    font-family: 'Share Tech Mono', monospace !important;
+    font-size: 11px !important;
+    color: var(--third-text-color) !important;
+    letter-spacing: 2px;
+    background: transparent !important;
+}
+
+/* =========================================================================
+   PAGINATION
+   ========================================================================= */
+.article-pagination,
+.pagination,
+.page-nav {
+    border-top: 1px solid var(--border-color) !important;
+}
+.article-pagination a,
+.page-nav a,
+.paginator a {
+    font-family: 'Share Tech Mono', monospace !important;
+    font-size: 11px !important;
+    color: var(--link-color) !important;
+    border: 1px solid var(--fourth-text-color) !important;
+    padding: 7px 14px !important;
+    border-radius: 2px !important;
+    letter-spacing: 2px !important;
+    background: transparent !important;
+}
+.article-pagination a:hover,
+.page-nav a:hover,
+.paginator a:hover {
+    background: var(--crt-primary-glow) !important;
+    border-color: var(--primary-color) !important;
+    color: var(--primary-color) !important;
+}
+
+/* =========================================================================
+   PASSWORD-PROTECTED POST (hbe) — restyle the decrypt input to CRT
+   ========================================================================= */
+.hbe-content {
+    color: var(--primary-color) !important;
+    font-family: 'VT323', monospace !important;
+    text-shadow: 0 0 8px var(--crt-primary-glow-strong) !important;
+}
+.hbe-input-field {
+    background: var(--background-color) !important;
+    border: 1px solid var(--primary-color) !important;
+    color: var(--primary-color) !important;
+    font-family: 'Share Tech Mono', monospace !important;
+    border-radius: 2px !important;
+}
+.hbe-input-field:focus {
+    outline: none !important;
+    box-shadow: 0 0 12px var(--crt-primary-glow-strong) !important;
+}
+
+/* =========================================================================
+   SIDEBAR + SIDE TOOLS + SCROLL BAR
+   ========================================================================= */
+.sidebar,
+.home-sidebar {
+    background: var(--second-background-color) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: none !important;
+}
+.right-side-tools-container .back-to-top,
+.right-side-tools-container .tool,
+.scroll-down-button,
+.to-top {
+    background: var(--second-background-color) !important;
+    border: 1px solid var(--primary-color) !important;
+    color: var(--primary-color) !important;
+    font-family: 'VT323', monospace !important;
+    box-shadow: none !important;
+}
+.right-side-tools-container .back-to-top:hover,
+.right-side-tools-container .tool:hover {
+    background: var(--crt-primary-glow) !important;
+    box-shadow: 0 0 12px var(--crt-primary-glow-strong) !important;
+}
+
+/* Progress bar (if enabled) */
+.read-progress-bar,
+.scroll-progress-bar,
+.progress-bar {
+    background: var(--primary-color) !important;
+    box-shadow: 0 0 6px var(--primary-color) !important;
+}
+
+/* =========================================================================
+   CARDS / CONTAINERS — flatten redefine's rounded shadow cards
+   ========================================================================= */
+.redefine-box-shadow,
+.redefine-box-shadow-flat {
+    box-shadow: none !important;
+    background: var(--second-background-color) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 3px !important;
+}
+
+/* =========================================================================
+   ABOUT PAGE — CRT HUD layout (scoped to .about-page)
+   ========================================================================= */
+.about-page { font-family: 'Share Tech Mono', monospace !important; }
+.about-hud {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 8px 0 32px;
+}
+.about-meta-strip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--third-text-color);
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--border-color);
+}
+.about-device-id { color: var(--link-color); text-shadow: 0 0 4px var(--fourth-text-color); }
+.about-status strong { color: var(--primary-color); }
+
+.about-identity {
+    display: flex;
+    gap: 24px;
+    align-items: stretch;
+    flex-wrap: wrap;
+}
+.about-avatar {
+    flex: 0 0 auto;
+    padding: 10px;
+    background: var(--second-background-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed var(--border-color);
+}
+.about-avatar-photo {
+    position: relative;
+    display: block;
+    width: 180px;
+    height: 180px;
+    overflow: hidden;
+}
+.about-avatar-photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(0.55) contrast(1.05);
+}
+.about-name-block {
+    flex: 1 1 280px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+.about-name {
+    font-family: 'VT323', monospace !important;
+    color: var(--primary-color) !important;
+    font-size: clamp(30px, 6vw, 44px) !important;
+    margin: 4px 0 6px !important;
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px var(--crt-primary-glow-strong);
+    animation: none;
+}
+.about-section-tag {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--fourth-text-color);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-size: 11px;
+}
+.about-callsign { color: var(--link-color); font-size: 14px; letter-spacing: 2px; margin-bottom: 4px; }
+.about-location { color: var(--third-text-color); font-size: 12px; letter-spacing: 1.5px; }
+.about-currently-inline {
+    margin-top: auto;
+    padding: 10px 12px;
+    border-left: 2px solid var(--fourth-text-color);
+    background: var(--second-background-color);
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--default-text-color);
+}
+.about-currently-label { color: var(--link-color); font-size: 11px; letter-spacing: 2px; margin-right: 8px; }
+
+.about-panel {
+    padding: 18px 22px;
+    background: var(--second-background-color);
+    border: 1px dashed var(--border-color);
+    position: relative;
+}
+.about-panel-label {
+    color: var(--link-color);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+.about-bio-p { color: var(--default-text-color); line-height: 1.7; margin: 8px 0; }
+.about-strong { color: var(--primary-color); }
+
+.about-grid {
+    display: grid;
+    gap: 22px;
+    grid-template-columns: 1fr;
+}
+@media (min-width: 768px) { .about-grid { grid-template-columns: 1fr 1fr; } }
+
+.about-stat-grid {
+    list-style: none;
+    margin: 0; padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+@media (min-width: 640px) { .about-stat-grid { grid-template-columns: repeat(4, 1fr); } }
+.about-stat { display: flex; flex-direction: column; gap: 4px; padding: 8px 0; }
+.about-stat-num {
+    font-family: 'VT323', monospace;
+    font-size: clamp(28px, 5vw, 38px);
+    color: var(--primary-color);
+    line-height: 1;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px var(--crt-primary-glow-strong);
+    white-space: nowrap;
+}
+.about-stat-label { font-size: 10px; letter-spacing: 2px; color: var(--third-text-color); }
+
+.about-stack {
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-wrap: wrap; gap: 8px;
+}
+.about-stack-chip {
+    display: inline-block;
+    padding: 4px 10px;
+    background: var(--crt-primary-glow);
+    border: 1px dashed var(--fourth-text-color);
+    border-radius: 2px;
+    color: var(--primary-color);
+    font-size: 12px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.about-contacts {
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 8px;
+}
+.about-contact-row { display: flex; gap: 16px; align-items: baseline; flex-wrap: wrap; }
+.about-contact-label {
+    color: var(--link-color);
+    font-size: 11px;
+    letter-spacing: 2px;
+    min-width: 140px;
+    flex-shrink: 0;
+}
+.about-contact-value {
+    color: var(--primary-color) !important;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    border-bottom: 1px dashed transparent;
+}
+a.about-contact-value:hover {
+    border-bottom-color: var(--fourth-text-color);
+    text-shadow: 0 0 6px var(--crt-primary-glow-strong);
+}
+
+.about-log-body {
+    margin: 0; padding: 0;
+    background: transparent !important;
+    border: none !important;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--third-text-color);
+    white-space: pre-wrap;
+    overflow-x: auto;
+}
+.about-log-prompt { color: var(--link-color); text-shadow: 0 0 4px var(--fourth-text-color); }
+.about-log-out { color: var(--primary-color); }
+
+/* HTB brand accent (fixed green) */
+.about-htb { --htb-green: #9fef00; }
+.about-htb-rank-tag {
+    color: #0b0f0a;
+    background: var(--htb-green);
+    padding: 2px 9px;
+    border-radius: 2px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-shadow: none;
+    box-shadow: 0 0 8px rgba(159, 239, 0, 0.45);
+}
+.about-htb-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.about-htb-logo { flex: 0 0 auto; color: var(--htb-green); filter: drop-shadow(0 0 6px rgba(159, 239, 0, 0.5)); }
+.about-htb-id { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.about-htb-handle { font-size: 1.15rem; font-weight: 700; letter-spacing: 1px; color: var(--htb-green); text-shadow: 0 0 6px rgba(159, 239, 0, 0.35); }
+.about-htb-sub { font-size: 11px; letter-spacing: 1.5px; color: var(--third-text-color); text-transform: uppercase; }
+.about-htb-stats .about-stat-num { color: var(--htb-green); text-shadow: 0 0 8px rgba(159, 239, 0, 0.4); }
+.about-htb-link {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 8px 18px;
+    border: 1px solid var(--htb-green);
+    color: var(--htb-green) !important;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+.about-htb-link:hover {
+    background: var(--htb-green);
+    color: #0b0f0a !important;
+    box-shadow: 0 0 14px rgba(159, 239, 0, 0.5);
+}
+
+/* About page wrapper: hide the default page-template h1 + flatten its container */
+.page-template-container .page-template-content { background: transparent !important; }
+
+/* =========================================================================
+   ABOUT — HUD corner-bracket frames (4 corners, like blog/about)
+   ========================================================================= */
+.about-page .hud-frame {
+    position: relative;
+    border: 1px dashed var(--border-color);
+    background-image:
+        linear-gradient(to left,   var(--link-color) 18px, transparent 18px),
+        linear-gradient(to bottom, var(--link-color) 18px, transparent 18px),
+        linear-gradient(to right,  var(--link-color) 18px, transparent 18px),
+        linear-gradient(to top,    var(--link-color) 18px, transparent 18px);
+    background-size: 18px 2px, 2px 18px, 18px 2px, 2px 18px;
+    background-position:
+        top -1px right -1px,
+        top -1px right -1px,
+        bottom -1px left -1px,
+        bottom -1px left -1px;
+    background-repeat: no-repeat;
+}
+.about-page .hud-frame::before,
+.about-page .hud-frame::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+}
+.about-page .hud-frame::before {
+    top: -1px; left: -1px;
+    border-top: 2px dashed var(--link-color);
+    border-left: 2px dashed var(--link-color);
+}
+.about-page .hud-frame::after {
+    bottom: -1px; right: -1px;
+    border-bottom: 2px dashed var(--link-color);
+    border-right: 2px dashed var(--link-color);
+}
+/* When a panel already has padding, the corner brackets sit on the border edge */
+.about-panel.hud-frame { border: 1px dashed var(--border-color); }
+
+/* =========================================================================
+   ABOUT — HTB progress bar (points to next level)
+   ========================================================================= */
+.about-htb-progress-wrap { margin-bottom: 18px; }
+.about-htb-progress-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--third-text-color);
+    margin-bottom: 6px;
+}
+.about-htb-progress-pct { color: var(--htb-green, #9fef00); font-weight: 700; }
+.about-htb-progress-track {
+    height: 10px;
+    background: rgba(159, 239, 0, 0.08);
+    border: 1px solid rgba(159, 239, 0, 0.25);
+    overflow: hidden;
+    border-radius: 1px;
+}
+.about-htb-progress-fill {
+    height: 100%;
+    background: var(--htb-green, #9fef00);
+    box-shadow: 0 0 10px rgba(159, 239, 0, 0.6);
+    transition: width 0.6s ease;
+}
+.about-htb-progress-meta {
+    margin-top: 6px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--third-text-color);
+    text-transform: uppercase;
+}
+@media (prefers-reduced-motion: reduce) {
+    .about-htb-progress-fill { transition: none; }
+}
+
+/* =========================================================================
+   ABOUT — CERTIFICATIONS chips (accent-colored, clickable)
+   ========================================================================= */
+.about-certs-list {
+    list-style: none;
+    margin: 0; padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.about-cert-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(159, 239, 0, 0.06);
+    border: 1px solid var(--fourth-text-color);
+    border-radius: 2px;
+    color: var(--link-color);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    text-shadow: 0 0 4px var(--fourth-text-color);
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+.about-cert-mark { color: var(--link-color); font-size: 0.95rem; text-shadow: 0 0 6px var(--fourth-text-color); }
+.about-cert-chip:hover {
+    background: var(--crt-primary-glow);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    box-shadow: 0 0 12px var(--crt-primary-glow-strong);
+}
+
+/* Panel label is now a flex row (label + optional rank tag) — left-align text */
+.about-panel-label > span:first-child { flex: 1; }
+
